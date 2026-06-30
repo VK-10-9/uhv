@@ -1,88 +1,105 @@
-# 🧠 UHV Study Companion & RAG Pipeline
-> **A high-intensity, exam-prep MCQ portal built under pressure with localized Retrieval-Augmented Generation.**
+# 🚨 UHV Exam Companion & RAG Pipeline (BUHK408)
+> **246/246 MCQs Fully Annotated • Local RAG Pipeline • Emergency Exam Cheatsheet**
 
-This repository contains a premium, interactive Multiple-Choice Question (MCQ) study companion for the course **Universal Human Values (BUHK408)**. It features 240+ questions complete with detailed explanations of why the correct option is correct and why incorrect options are wrong.
+[![Live Demo](https://img.shields.io/badge/Live_Portal-uhv.vishwadev.tech-critical?style=for-the-badge&logo=vercel&logoColor=white)](https://uhv.vishwadev.tech/)
+[![Exam Date](https://img.shields.io/badge/Exam_Status-Tomorrow_🚨-red?style=for-the-badge)](https://uhv.vishwadev.tech/)
+[![RAG Coverage](https://img.shields.io/badge/RAG_Explanations-246_/_246_Done-success?style=for-the-badge)](https://uhv.vishwadev.tech/)
 
-The explanations were compiled from PowerPoint slides and PDF modules using a custom, localized **Retrieval-Augmented Generation (RAG)** pipeline powered by Google's **Gemini 1.5 Flash**.
+This repository is a **high-intensity, exam-prep MCQ portal** built under extreme pressure for the **Universal Human Values (BUHK408)** exam. It couples a premium, responsive glassmorphic web companion with a localized **Retrieval-Augmented Generation (RAG)** pipeline that extracts notes from PDF modules and lecture slides using Gemini 1.5 Flash.
 
 ---
 
-## 🚀 Architecture Workflow
+## ⚡ Emergency UHV Exam Cheatsheet (2-Minute Revision)
+
+*Studying last-minute? Here are the core UHV concepts you need to pass tomorrow's exam:*
+
+### 1. Basic Human Aspirations
+* **Continuous Happiness (Sukha)**: A state of harmony at all levels of living. It is a qualitative, continuous need of the Self (`I`).
+* **Prosperity (Samridhi)**: The feeling of having *more* than required physical facilities. It requires (1) assessment of physical needs, and (2) production/assurance of more than needed.
+* **Modern Misconception**: Confusing **Suvidha** (physical facility/pleasure) with **Sukha** (happiness). Physical facilities are temporary and quantitative; happiness is continuous and qualitative.
+
+### 2. Co-existence of Self (`I`) and Body
+| Feature | Self (`I`) | Body |
+| :--- | :--- | :--- |
+| **Type** | Conscious (Chetana) | Material (Jada) |
+| **Needs** | Qualitative (Respect, Trust, Happiness) | Quantitative (Food, Clothing, Shelter) |
+| **Duration** | Continuous | Temporary / Periodic |
+| **Activities** | Desiring, Thinking, Selecting, Analyzing | Breathing, Eating, Walking, Heartbeat |
+| **Fulfillment** | Right Understanding & Right Feelings | Physical Facilities (Suvidha) |
+
+### 3. Four Levels of Harmony
+1. **Harmony in the Self**: Aligning desiring, thinking, and selecting. Resolving inner conflicts.
+2. **Harmony in the Family**: Established through right feelings/values in relationships.
+3. **Harmony in the Society**: Fearlessness (Abhaya), trust, and co-existence in all families.
+4. **Harmony in Nature/Existence**: Mutual fulfillment (Paraspar Purakata) among the four orders.
+
+### 4. Nine Values in Relationships
+1. **Trust (Vishwas - FOUNDATIONAL VALUE)**: The assurance that the other person wants my happiness and well-being.
+2. **Respect (Samman)**: Right evaluation (neither over-evaluating, under-evaluating, nor otherwise-evaluating).
+3. **Affection (Sneha)**: Acceptance of the other as being related to me.
+4. **Care (Mamata)**: Feeling of responsibility to nurture and protect the body of the relative.
+5. **Guidance (Vatsalya)**: Feeling of responsibility to nurture the self of the relative with right understanding.
+6. **Reverence (Shraddha)**: Acceptance of excellence in others.
+7. **Glory (Gaurav)**: Feeling of honor for those who have made effort for excellence.
+8. **Gratitude (Kritagyata)**: Feeling of honor for those who have helped me in my development.
+9. **Love (Prema - COMPLETE VALUE)**: The feeling of being related to all human beings and everything in existence.
+
+### 5. Four Orders of Nature
+1. **Material Order (Padartha Avastha)**: Soil, water, stones. Activity: Composition/Decomposition.
+2. **Pranic Order (Prana Avastha)**: Plants, trees. Activity: Respiration, growth.
+3. **Animal Order (Jiva Avastha)**: Animals. Co-existence of Self (`I`) and Body. Conduct is breed-defined.
+4. **Human Order (Gyana Avastha)**: Humans. Co-existence of Self (`I`) and Body. Conduct is value-defined (Right Understanding).
+
+---
+
+## 🛠️ Project Architecture
 
 ```mermaid
 graph TD
     A[Raw PPT/PPTX Slides & PDF Modules] -->|extract_text.py| B(extracted_notes.txt)
-    B -->|generate_explanations.py| C{Local Text Index}
+    B -->|generate_explanations.py| C{Local Keyword Index}
     D[uhv_quiz.html Questions] -->|Search & Retrieve| C
-    C -->|Top 5 Context Slides| E[Gemini 1.5 Flash API]
-    E -->|JSON Explanations| F(explanations_cache.json)
+    C -->|Top 5 Context Slides| E[Gemini API]
+    E -->|Model Rotation Engine| F(explanations_cache.json)
+    F -->|inject_manual.py| F
     F -->|Inject| G[index.html & uhv_quiz.html]
-    G -->|Continuous Deployment| H[Vercel Static Hosting]
+    G -->|CD Deploy| H[Vercel Static Hosting]
 ```
 
----
-
-## 📂 Project Structure
-
-- **`index.html` / `uhv_quiz.html`**: A premium, fully responsive, glassmorphic frontend interface featuring:
-  - Google Fonts (`Lora` for questions, `Plus Jakarta Sans` for controls).
-  - Progress tracking bar with exam readiness percentage.
-  - Interactive choice highlights (green for correct, red for incorrect).
-  - Smooth slide-down explanation cards that show option-specific breakdowns.
-  - Interactive filters for High-Priority questions and mistake tracking.
-- **`extract_text.py`**: A parsing engine that scans the workspace for `.pdf`, `.pptx`, and older `.ppt` files. On Windows, it automatically launches PowerPoint COM Automation to extract text from old binary presentations, outputting `extracted_notes.txt`.
-- **`generate_explanations.py`**: A localized RAG engine that:
-  - Splits extracted notes into 1,160+ page/slide chunks.
-  - Pre-tokenizes and indexes the chunks using set-overlap frequency search in Python.
-  - For each question, retrieves the top 5 most relevant slides.
-  - Queries `gemini-flash-latest` using REST transport with a 120s timeout in lightweight batches of 4 questions to prevent HTTP connection drops.
-  - Logs unbuffered output in real-time and writes to `explanations_cache.json` for full task resume-on-failure support.
-- **`requirements.txt`**: Python dependencies required to run the backend extraction and generation pipelines.
+### Key Technical Engineering:
+1. **Local Search Index (RAG)**: Notes are parsed into 1,165 slide-level chunks. The generator performs TF-IDF term-overlap checks to pull the top 5 most relevant slides per question, minimizing Gemini API context payloads (~9k tokens per request) to prevent quota drops.
+2. **Model Rotation Engine**: Bypasses the 20-request daily limit of free-tier Google AI Studio projects. If the script detects a `429 Quota Exceeded` error, it automatically rotates model families:
+   $$\text{gemini-flash-latest} \longrightarrow \text{gemini-2.5-flash} \longrightarrow \text{gemini-2.0-flash} \longrightarrow \text{gemini-2.0-flash-lite}$$
+3. **Watchdog Process Wrapper**: Runs the generator in a subprocess. On Windows, if a network socket hangs or is throttled (common on Windows Defender), the watchdog detects the stagnation (no cache modifications for 260 seconds), terminates the process, and resumes from the JSON cache automatically.
 
 ---
 
-## 🛠️ How to Run & Build
+## 💻 Running it Locally
 
-### 1. Setup Environment
-Install the dependencies:
+### 1. Install Requirements
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Extract Course Material
-Place all your lecture slides (`.ppt`/`.pptx`) and PDF modules in the root folder, then run:
+### 2. Extract Lecture Slides
+Compile raw modules and presentations into a text database:
 ```bash
 python extract_text.py
 ```
-This produces `extracted_notes.txt` (a text database mapping slide titles to slide body texts).
 
-### 3. Generate Explanations (RAG Pipeline)
-Get a free Gemini API key from [Google AI Studio](https://aistudio.google.com/), set it in your environment, and run the pipeline:
+### 3. Run Generator
+Run the watchdog wrapper with your Gemini API key:
 ```powershell
-# PowerShell (Windows)
-$env:GEMINI_API_KEY="your-api-key-here"
-python -u generate_explanations.py
+$env:GEMINI_API_KEY="your-key-here"
+python -u run_generator.py
 ```
-This runs the local search retriever, queries Gemini in batches of 4 questions, writes to `explanations_cache.json`, and finally injects the completed explanations directly back into the HTML file.
 
 ---
 
-## ⚡ Deployment to Vercel
+## 🎨 Interactive Portal Features
+* **Progress Readiness Bar**: Tracks your exam readiness based on correct answers.
+* **Collapsible Cards**: Clicking options drops down specific rationale for **why** it is correct or incorrect.
+* **Mistake Filters**: Tracks wrong choices in real-time, allowing you to filter and practice only your weakest questions.
+* **Clean Fonts & Glassmorphism**: Utilizes `Lora` and `Plus Jakarta Sans` for readability under late-night study pressure.
 
-The portal is designed to run entirely client-side. The compiled HTML file contains all questions and explanations embedded inline, meaning it requires **zero databases, zero APIs, and zero backend servers at runtime**.
-
-To host the portal:
-1. Initialize the repository:
-   ```bash
-   git init
-   git remote add origin https://github.com/VK-10-9/uhv.git
-   git branch -M main
-   git add .
-   git commit -m "feat: setup RAG-powered MCQ portal"
-   git push -u origin main
-   ```
-2. Go to **[Vercel Dashboard](https://vercel.com/dashboard)**.
-3. Import the repository `VK-10-9/uhv`.
-4. Set the Framework Preset to **Other** (static deployment) and click **Deploy**.
-
-Vercel will build and serve your portal instantly at a custom sub-domain. Any future updates pushed to `main` will trigger automated redeployments.
+*Good luck with the exam tomorrow! 🚀*
