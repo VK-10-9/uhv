@@ -1,0 +1,14 @@
+# Ignore PowerPoint and PDF lecture notes
+*.pdf
+*.ppt
+*.pptx
+
+# Ignore local RAG script & text database
+extracted_notes.txt
+extract_text.py
+generate_explanations.py
+explanations_cache.json
+
+# Ignore system files and logs
+.system_generated/
+.gemini/

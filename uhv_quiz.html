@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UHV Exam Companion — Premium Study Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fdfcfb;
+    --card-bg: #ffffff;
+    --text-main: #2d2a25;
+    --text-muted: #726d64;
+    --border: #e6e2da;
+    --accent: #8c603f;
+    --accent-hover: #754f32;
+    --accent-light: #f7f3ed;
+    --correct: #387b50;
+    --correct-bg: #eaf6ee;
+    --correct-border: #bcdfc6;
+    --wrong: #c44737;
+    --wrong-bg: #fdf1f0;
+    --wrong-border: #f5cfca;
+    --high-priority: #d97706;
+    --shadow: 0 4px 20px rgba(140, 96, 63, 0.04);
+    --shadow-hover: 0 10px 30px rgba(140, 96, 63, 0.08);
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    line-height: 1.6;
+    padding: 40px 20px 100px;
+    background-image: radial-gradient(var(--border) 0.5px, transparent 0.5px), radial-gradient(var(--border) 0.5px, var(--bg) 0.5px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+  }
+  
+  .wrap {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  header {
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  
+  h1 {
+    font-family: 'Lora', serif;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  
+  .sub {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  
+  /* Progress Bar Container */
+  .progress-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  
+  .progress-bar-bg {
+    background: var(--accent-light);
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+    position: sticky;
+    top: 16px;
+    z-index: 10;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+  }
+  
+  .score-label {
+    font-weight: 600;
+    color: var(--text-main);
+  }
+  
+  .score {
+    font-weight: 800;
+    color: var(--accent);
+    font-size: 1.1rem;
+  }
+  
+  .controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  select, button {
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+  }
+  
+  select:hover, select:focus {
+    border-color: var(--accent);
+  }
+  
+  button.reset {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+  }
+  
+  button.reset:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+  }
+  
+  button.reset:active {
+    transform: translateY(0);
+  }
+  
+  .q {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+  }
+  
+  .q:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border);
+  }
+  
+  .q.high {
+    border-left: 4px solid var(--high-priority);
+  }
+  
+  .qhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .qnum {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .freq {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--accent-light);
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  
+  .freq.hi {
+    background: #fef3c7;
+    color: #b45309;
+  }
+  
+  .qtext {
+    font-family: 'Lora', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  
+  .opts {
+    display: grid;
+    gap: 10px;
+  }
+  
+  .opt {
+    text-align: left;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text-main);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .opt:hover:not([disabled]) {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    padding-left: 20px;
+  }
+  
+  .opt.correct {
+    background: var(--correct-bg) !important;
+    border-color: var(--correct-border) !important;
+    color: var(--correct) !important;
+    font-weight: 700;
+  }
+  
+  .opt.wrong {
+    background: var(--wrong-bg) !important;
+    border-color: var(--wrong-border) !important;
+    color: var(--wrong) !important;
+  }
+  
+  .opt[disabled] {
+    cursor: default;
+  }
+  
+  /* Explanation Card styling */
+  .explanation-card {
+    margin-top: 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  .explanation-header {
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .explanation-header.correct {
+    background: var(--correct-bg);
+    color: var(--correct);
+    border-bottom: 1px solid var(--correct-border);
+  }
+  
+  .explanation-header.wrong {
+    background: var(--wrong-bg);
+    color: var(--wrong);
+    border-bottom: 1px solid var(--wrong-border);
+  }
+  
+  .explanation-body {
+    padding: 16px;
+    background: #ffffff;
+    font-size: 0.92rem;
+    color: var(--text-main);
+  }
+  
+  .explanation-section {
+    margin-bottom: 12px;
+  }
+  
+  .explanation-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .explanation-title {
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    color: var(--text-main);
+  }
+  
+  .explanation-title.good {
+    color: var(--correct);
+  }
+  
+  .explanation-title.bad {
+    color: var(--wrong);
+  }
+  
+  .explanation-text {
+    line-height: 1.5;
+    color: #4a4740;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .hidden {
+    display: none !important;
+  }
+  
+  @media (max-width: 600px) {
+    body {
+      padding: 20px 12px 60px;
+    }
+    h1 {
+      font-size: 1.75rem;
+    }
+    .bar {
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+      position: static;
+    }
+    .controls {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    select, button {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>UHV Study Companion</h1>
+    <div class="sub">BUHK408 — Universal Human Values Exam Prep</div>
+  </header>
+
+  <!-- Progress Bar Component -->
+  <div class="progress-container">
+    <div class="progress-info">
+      <span class="score-label">Exam Readiness Progress</span>
+      <span id="progressText">0% Completed (0/0)</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <div>
+      <span class="score-label">Score:</span> 
+      <span class="score" id="score">0</span> / <span id="answered">0</span> answered
+    </div>
+    <div class="controls">
+      <select id="filter">
+        <option value="all">All questions</option>
+        <option value="hi">High-priority (3+ papers)</option>
+        <option value="wrong">Mistakes Only</option>
+      </select>
+      <button class="reset" id="resetBtn">Reset Quiz</button>
+    </div>
+  </div>
+
+  <div id="quiz"></div>
+</div>
+
+<script>
+// freq = number of the 6 papers this question (or its near-identical twin) appeared in
+const QUESTIONS = [
+  {freq:6, q:"Self-exploration uses two mechanisms:", opts:["Natural acceptance & experiential validation", "Right understanding and self-exploration", "Self-investigation and self-exploration", "Natural and verifiable"], a:0, explanations:["This is the correct option. The notes clearly state that self-exploration, the process for value education, is a two-part process involving 'Natural Acceptance' for verifying proposals and 'Experiential Validation' in living to check for mutual happiness and prosperity.", "Right understanding is the *outcome* or goal of self-exploration, not one of the mechanisms it uses. Self-exploration is the method employed to achieve right understanding.", "Self-investigation is largely synonymous with self-exploration itself, describing the internal process of inquiry. It is not a distinct second mechanism alongside self-exploration but rather part of its definition.", "Natural and verifiable are *guidelines* for the *content* of value education, ensuring it appeals to reason and can be experienced. They are not mechanisms or steps of the self-exploration process itself."]},
+  {freq:6, q:"What helps a human being transform from animal consciousness to human consciousness?", opts:["Right attitude", "Prosperity", "Right Understanding", "Wealth"], a:2, explanations:["Right attitude is a positive outcome of transformation, but 'Right Understanding' is the foundational and comprehensive solution identified in UHV. A right attitude stems from right understanding.", "Prosperity is a *result* of living in human consciousness (the feeling of having more physical facility with right understanding), not the cause or catalyst for transforming consciousness itself. It follows, rather than precedes, the transformation.", "This is the correct option. The notes state, \"Holistic development is the transformation of consciousness – to human consciousness. Of course, it will necessitate working on all three – right understanding, fulfilment in relationship as well as physical facility; and in that order of priority.\" Right understanding is the first and most crucial step.", "Wealth accumulation is often associated with animal consciousness if pursued solely for physical facility without corresponding right understanding and relationship. Therefore, wealth itself does not lead to transformation to human consciousness."]},
+  {freq:5, q:"\"Samridhi\" means", opts:["Happiness", "Wealth", "Prosperity", "Health"], a:2, explanations:["Happiness is defined as a state of 'Harmony' within the self. While both happiness and prosperity are basic human aspirations, they refer to distinct feelings and states in the UHV framework.", "Wealth refers to the accumulation of physical facilities. Prosperity, or Samridhi, is specifically the *feeling* of having more than required physical facility, which involves a right assessment of needs, not just accumulation.", "This is the correct option. The notes explicitly define Samridhi as \"Prosperity is the feeling of having more than required physical facility.\" This feeling arises from correctly assessing physical needs and ensuring their adequate availability.", "Health (Swasthya) is the state of the body, a natural outcome of 'self-regulation' (Sanyam) by the Self. It is distinct from prosperity, which relates to the feeling of having sufficient physical facilities."]},
+  {freq:5, q:"Basic human aspirations / continuous happiness and prosperity are the", opts:["Impractical thought", "Impossible desires", "Basic human aspirations", "None of these"], a:2, explanations:["UHV proposes that continuous happiness and prosperity are not merely idealistic or impractical thoughts, but are desirable and achievable goals that every human being naturally accepts as their purpose.", "The course aims to demonstrate that continuous happiness and prosperity are indeed possible and are the fundamental desires of human beings, contradicting the idea that they are impossible desires.", "This is the correct option. The notes state, \"We have a natural acceptance for continuity of happiness and prosperity. These are our basic aspirations.\" They are the fundamental, universal desires of every human being.", "This option is incorrect because continuous happiness and prosperity are explicitly identified as the basic human aspirations within the UHV framework."]},
+  {freq:5, q:"Harmony within myself is known as", opts:["Excitement", "Happiness", "Both", "None of the above"], a:1, explanations:["Excitement is described as a momentary feeling resulting from favorable sensations or external feelings. It is short-lived and not sustainable, differing from the continuous state of happiness.", "This is the correct option. The notes state, \"Happiness is to be in a state of harmony.\" When one's internal desires, thoughts, and expectations are in harmony with one's natural acceptance, this leads to a state of happiness within the Self.", "This option is incorrect because excitement is explicitly differentiated from happiness in the notes. Happiness is a harmonious state, while excitement is a temporary sensation.", "This option is incorrect, as happiness is clearly defined as the state of harmony within oneself according to the UHV framework."]},
+  {freq:5, q:"Value and skills go hand in hand — is this true?", opts:["Always True", "False", "Cannot tell", "Sometimes true"], a:0, explanations:["This is the correct option. The notes explicitly state: \"Values and skills go hand in hand. Both values and skills are required. There is an essential complementarity between the two.\" This indicates their constant and fundamental relationship for human fulfillment.", "This statement contradicts the core UHV principle that values and skills are complementary and both are necessary for a fulfilling life, with values having priority.", "The notes provide a clear and definite stance on the relationship between values and skills, emphasizing their essential complementarity, so it is not a matter of inability to tell.", "The relationship between values and skills is presented as a fundamental and continuous principle for holistic development, not something that is only occasionally true. They are always required together."]},
+  {freq:5, q:"What is the acceptance of excellence in others called?", opts:["Reverence", "Glory", "Gratitude", "Jealous"], a:0, explanations:["This is the correct option. The notes explicitly define \"Reverence is the feeling of acceptance for excellence.\" Excellence refers to the state of continuous happiness with a complete understanding of harmony.", "Glory is the feeling of acceptance for those who have *made effort* for excellence, rather than for the excellence itself. It is about appreciating the journey or contribution of great people.", "Gratitude is the feeling of acceptance for those who have made effort for *my* excellence, specifically acknowledging help received in one's own development.", "Jealousy is a negative feeling and indicates a lack of affection or acceptance for others' achievements, directly opposite to the feeling of reverence for excellence."]},
+  {freq:5, q:"Foundational/foundation value in a relationship is", opts:["Respect", "Love", "Trust", "Glory"], a:2, explanations:["Respect, defined as 'right evaluation', is a crucial feeling in relationships, but trust is presented as the very first and most fundamental value upon which all other feelings are built.", "Love is described as the 'complete value', representing the feeling of being related to all. It is the culmination of relationship values, achieved after establishing other foundational feelings.", "This is the correct option. Module 3 clearly states that \"Trust is to be assured that the other intends to make me happy and prosperous.\" This assurance forms the bedrock of any relationship and is explicitly called the 'foundation value'.", "Glory is the feeling of acceptance for those who have made effort for excellence. It is a specific relationship value, not the overarching foundation for all relationships."]},
+  {freq:5, q:"Human life / harmony should be maintained at four levels: Self, Family, Society and", opts:["Nature", "Nurture", "World", "Universe"], a:0, explanations:["This is the correct option. The notes specify the four levels of living as: 1. Individual (Self), 2. Family, 3. Society, and 4. Nature/Existence. Harmony must be understood and lived at all these levels.", "Nurture refers to care or development, which is an action or a characteristic, not a distinct level of human living or harmony in the UHV framework.", "While 'world' is part of the broader vision (world family order), 'Nature/Existence' is the specific fourth level explicitly stated in the context of the four levels of living.", "Similar to 'world', 'universe' represents a broader scope. However, 'Nature/Existence' is the precise term used in the UHV notes for the fourth level of harmony in living."]},
+  {freq:4, q:"What is the state of liking and a holistic, all-encompassing state of mind that creates inner harmony?", opts:["Prosperity", "Happiness", "Innateness", "Self-organized"], a:1, explanations:["Prosperity is the feeling of having more than required physical facilities. It is related to material well-being, not directly to the inner state of mind that creates harmony.", "This is the correct option. The notes define happiness as \"The state or situation, in which I live, if there is harmony / synergy in it, it is Naturally Acceptable to me to be in that state / situation.\" This perfectly matches the description of a holistic state of mind creating inner harmony.", "Innateness refers to something inherent or a natural acceptance, which is a property of the Self, rather than the state of mind that creates inner harmony.", "Self-organized describes a characteristic of units in existence or the Self when aligned with natural acceptance. It is not the term used to describe the state of mind that creates inner harmony."]},
+  {freq:4, q:"All units of nature can be classified into how many orders?", opts:["Two", "Three", "Four", "Six"], a:2, explanations:["Two is an insufficient number to classify all units of nature. The UHV framework defines a more comprehensive classification.", "Three would omit one of the defined orders of nature according to the UHV framework, which explicitly classifies units into four categories.", "This is the correct option. The notes explicitly state: \"All units can be categorised into 4 orders: 1. Physical order… 2. Bio order… 3. Animal order… 4. Human order.\"", "Six is not the number of orders of nature specified in the provided UHV lecture notes. The classification is consistently presented as four orders."]},
+  {freq:4, q:"Total number of feelings in human relationship is", opts:["5", "9 (most papers) / 10 or 11 in some", "9", "8"], a:2, explanations:["Five is not the total number of definite feelings in human relationships identified by UHV. The framework specifies a larger, distinct set.", "While this option contains the correct number '9', the additional phrase '10 or 11 in some' introduces ambiguity not present in the strict UHV definition. The curriculum consistently identifies 9 feelings.", "This is the correct option. Module 3 explicitly lists and enumerates nine specific feelings or values in human relationships: Trust, Respect, Affection, Care, Guidance, Reverence, Glory, Gratitude, and Love.", "Eight is an incorrect number as it omits one of the definite feelings in human relationships as per the UHV curriculum."]},
+  {freq:4, q:"Right understanding gained through self-exploration enables us to identify the definitiveness of human conduct — this is called", opts:["Ethical Human conduct", "Values", "Policy", "Utility values"], a:0, explanations:["Ethical human conduct is the term used to describe the definitiveness of human conduct that emerges from right understanding gained through self-exploration. This is explicitly stated in the notes as the outcome of right understanding.", "Values are a component of ethical human conduct, which also includes policies and character. They define our participation at different levels, but they are not the conduct itself.", "Policies are a component of ethical human conduct, detailing how to live with human values, including plans and programs. They are not the overall human conduct itself.", "The term 'utility values' is not defined in the provided UHV notes. Ethical human conduct is comprehensive, encompassing values, policy, and character, rather than just utility."]},
+  {freq:4, q:"Giving weightage to physical facilities, maximization of sensory pleasures, accumulation of wealth is called", opts:["Animal Consciousness", "Animal Unconsciousness", "Semi-Consciousness", "Human Consciousness"], a:0, explanations:["Living primarily for physical facilities, including the maximization of sensory pleasures and accumulation of wealth, is defined as living with animal consciousness. This is because for animals, physical facility is necessary and adequate, but for humans, it alone is not sufficient for fulfillment.", "The notes define a state of 'animal consciousness' for human beings, not 'animal unconsciousness'. Unconsciousness implies a lack of awareness, which is distinct from actively pursuing physical facilities.", "The notes do not use the term 'semi-consciousness' to describe this state. The core distinction is clearly drawn between 'animal consciousness' and 'human consciousness'.", "Human consciousness involves living with continuous happiness and prosperity by ensuring right understanding, fulfilling relationships, and having adequate physical facilities in the correct priority. It is the opposite of living solely for physical facilities and sensory pleasures."]},
+  {freq:4, q:"Sah-Astitva means", opts:["Co-existence", "Co-operation", "Co-option", "Corporate identity"], a:0, explanations:["Sah-Astitva directly translates to 'Co-existence' in the UHV framework. This fundamental reality describes existence as units submerged in all-pervading space, inherently in harmony.", "Co-operation is an activity or behavior that emerges from living in relationship and understanding co-existence, but it is not the fundamental existential reality of Sah-Astitva itself.", "Co-option refers to absorbing someone into a group, which is a social or political process and not related to the existential meaning of Sah-Astitva.", "Corporate identity relates to the image and branding of an organization, which is entirely outside the scope of the UHV definition of Sah-Astitva as a fundamental aspect of existence."]},
+  {freq:4, q:"To fulfil Human Aspirations, what is/are necessary?", opts:["Both values and skills", "Values only", "Skills only", "None of these"], a:0, explanations:["Both values and skills are necessary to fulfill human aspirations. Values provide clarity on 'what to do' (our aspirations), while skills provide the competence on 'how to do' (to actualize them). They are complementary and go hand in hand.", "While values are prioritized as they define our aspirations, skills are also explicitly required to actualize those aspirations. Focusing on values alone without the means to implement them would be incomplete.", "Skills alone are deemed insufficient as they only provide the 'how to do' without addressing 'what to do', potentially leading to misdirection or exploitation. The present education system is critiqued for being skill-biased without a base of values.", "This option is incorrect because the notes clearly state that both values and skills are essential and complementary for fulfilling human aspirations."]},
+  {freq:4, q:"Right understanding + Physical facilities in human being leads to", opts:["Mutual property", "Mutual happiness", "Mutual fulfillment", "Mutual benefit"], a:2, explanations:["Mutual property is not a term used in the UHV framework to describe the outcome of right understanding and physical facilities. The focus is on a deeper sense of fulfillment rather than mere shared ownership.", "Mutual happiness is achieved through right understanding and fulfilling relationships with other human beings. While physical facilities support overall well-being, 'mutual happiness' is primarily relational.", "Right understanding and appropriate physical facilities, when prioritized correctly, lead to mutual fulfillment. Right understanding enables mutual happiness through relationships and helps identify needs for mutual prosperity from physical facilities, leading to a state of overall fulfillment.", "Mutual benefit implies transactional gain for both parties. UHV emphasizes a holistic 'mutual fulfillment' that encompasses happiness and prosperity, extending beyond simple transactional benefits."]},
+  {freq:4, q:"Word 'Ethics' comes from", opts:["Ethos", "Eternity", "Elementary", "Essentiality"], a:0, explanations:["The word 'Ethics' is derived from the Greek word 'Ethos,' meaning character or custom. This is a common etymological origin for the term 'ethics' in general, forming the basis for 'ethical human conduct' in UHV.", "Eternity refers to infinite time, which is unrelated to the etymological origin of the word 'ethics.'", "Elementary means basic or fundamental, but it is not the root word from which 'ethics' is derived.", "Essentiality refers to the quality of being essential, but it is not the linguistic root of the word 'ethics.'"]},
+  {freq:3, q:"To maintain harmony, we work at four levels. Identify second level of living.", opts:["Self", "Family", "Nature", "Society"], a:1, explanations:["The Self (individual human being) is the first level of living, not the second. Harmony begins within the individual before extending outwards.", "Family is identified as the second level of living in the framework for achieving continuous happiness. Understanding and living in harmony starts with the individual and then extends to the family.", "Nature (or Nature/Existence) is the fourth and final level of living for a human being in the comprehensive framework, encompassing the harmony with the entire existence.", "Society is the third level of living, extending the harmony from the family to the broader community and human interactions."]},
+  {freq:3, q:"What is the fourth level of living?", opts:["Society", "Individual", "Family", "Nature"], a:3, explanations:["Society is the third level of living, where harmony extends beyond the family to the broader social order.", "Individual is the first level of living, focusing on harmony within the Self and with the Body.", "Family is the second level of living, where initial experiences of relationship and harmony are cultivated.", "Nature (or Nature/Existence) is the fourth level of living, involving understanding and living in mutual fulfillment with all units in existence."]},
+  {freq:3, q:"What is the first level of living?", opts:["Society", "Individual", "Family", "Nature"], a:1, explanations:["Society is the third level of living in the UHV framework, following the individual and the family.", "The Individual (Self) is the first and most fundamental level of living where human beings must strive for harmony, encompassing internal harmony and harmony with the body.", "Family is the second level of living, building upon the individual's harmony and serving as the basic unit of human interaction.", "Nature (or Nature/Existence) is the fourth and most expansive level of living, representing harmony with the entire cosmos."]},
+  {freq:3, q:"Beliefs come to us from...", opts:["What we read", "What we see", "What parents/friends talk about", "All the above"], a:3, explanations:["What we read is a source of beliefs, as ideas and notions from society are often transmitted through written material. However, it is not the sole source.", "What we see, through our senses, can also contribute to the formation of beliefs or 'preconditionings' by influencing our perceptions and assumptions. Yet, it is not the only source.", "What parents and friends talk about (family and social interactions) are significant sources of beliefs, as individuals often adopt values and notions from those close to them without critical verification. This is a key aspect of preconditioning.", "Beliefs, or 'preconditionings,' are largely absorbed from various external sources in our environment, including what we read, observe, and hear from family, friends, and society. Therefore, all these factors contribute to how beliefs are formed."]},
+  {freq:3, q:"One of the basic desires of every human being is to be always...", opts:["Happy", "Sad", "Laugh", "Earn money"], a:0, explanations:["One of the basic desires (aspirations) of every human being is to be continuously happy. This is a natural acceptance, meaning all human beings inherently want to be happy and desire its continuity.", "No human being naturally desires to be sad. Sadness is a state of disharmony or contradiction, which is naturally unacceptable and something people actively try to avoid.", "Laughter is an expression of happiness, not the fundamental desire itself. While people enjoy laughing, the underlying desire is for the state of happiness that prompts such expressions.", "Earning money is a means to acquire physical facilities, which are necessary for the body and contribute to prosperity. However, it is a means to an end, not the ultimate basic desire of a human being, which is continuous happiness and prosperity."]},
+  {freq:3, q:"Sensation is the perception associated with stimulation of a sense organ or specific body condition.", opts:["Happiness", "Recognizing", "Sensation", "All of the above"], a:2, explanations:["Happiness is a state of harmony within the Self, distinct from the physical input received through sense organs. It is a qualitative feeling, not a physiological perception.", "Recognizing is an activity of both the Self and the Body, involving identifying something. However, 'sensation' specifically defines the perception from sense organ stimulation, making it a more precise fit for the definition provided.", "Sensation is precisely defined in UHV as the information or perception received by the Self from the Body through the five sense organs (sound, touch, sight, taste, smell) or from specific body conditions. This matches the statement perfectly.", "While sensation is a part of human experience, this option is incorrect because the specific definition provided in the question accurately describes only 'sensation,' not a combination of 'all of the above.'"]},
+  {freq:3, q:"Harmony among the body parts is known as", opts:["Sanyam", "Swasthya", "Synchronization", "None"], a:1, explanations:["Sanyam (Self-regulation) is the *feeling of responsibility* in the Self towards the Body for its nurturing, protection, and right utilization. It is not the state of harmony among body parts itself, but rather the internal disposition that leads to it.", "Swasthya (Health) is the natural outcome when the Self has the feeling of self-regulation and the Body is able to perform as per the instructions of the Self, with all its parts in harmony amongst each other. Therefore, harmony among the body parts is known as Swasthya.", "Synchronization refers to the coordinated timing of different parts working together. While a healthy body demonstrates synchronization, 'Swasthya' is the specific UHV term for the overall state of harmony and order among the body parts.", "This option is incorrect because 'Swasthya' is the defined term in UHV for harmony among body parts."]},
+  {freq:3, q:"What is the reason for problems in our relationship with various entities?", opts:["Assumptions", "Misunderstanding", "Preconditioning", "None of these"], a:0, explanations:["Problems in our relationship with various entities are fundamentally due to 'assumptions without knowing'. When we act based on unverified assumptions about ourselves or others, it leads to indefinite conduct and disharmony.", "Misunderstanding is a consequence of operating on unverified assumptions. While it directly causes problems in relationships, the root cause identified in UHV is the act of 'assuming without knowing' rather than the misunderstanding itself.", "Preconditioning refers to the beliefs, notions, or ideas we have absorbed from our environment without proper verification. It is a major *source* of the unverified assumptions that lead to problems, but not the problem itself.", "This option is incorrect because 'assumptions' is identified as the fundamental reason for problems in relationships within the UHV framework."]},
+  {freq:3, q:"Employing the body physically for production/maintenance of physical facilities is called", opts:["Labour", "Work", "Skill", "None"], a:1, explanations:["Labour is defined as the physical effort or work done. In UHV, 'work' is a broader term encompassing the entire process of engaging with nature to produce or maintain physical facilities, often using labour.", "Work is the specific UHV term for the effort a human being does on the rest of nature to produce or maintain physical facilities. This activity contributes to mutual prosperity when done in a mutually enriching and cyclic manner.", "Skill refers to the *ability* or expertise required to perform a task, including work or labour. It is the competence to execute, not the act of employing the body itself for production or maintenance.", "This option is incorrect as 'Work' is the precise term used in the UHV notes to describe this activity."]},
+  {freq:3, q:"Innovation, in its modern meaning, is", opts:["Novelty", "Newness", "Innovation", "Neatness"], a:2, explanations:["Novelty refers to the quality of being new or original. While innovation often embodies novelty, it is more precisely the successful introduction of new ideas, methods, or products, rather than just the quality of being new.", "Newness is the state of being recently made or discovered. Similar to novelty, it describes a characteristic of innovation but is not the term that defines 'innovation' itself.", "Innovation, in its modern meaning, refers to the introduction of new methods, ideas, or products. The UHV notes use the term in its standard, contemporary sense when discussing human aspirations for progress and development.", "Neatness pertains to tidiness, order, or precision. This concept is unrelated to the process or outcome of introducing new ideas, methods, or products."]},
+  {freq:3, q:"The form of ethics helping professionals decide what to do in a moral/ethical dilemma is", opts:["Organizational ethics", "Professional ethics", "Business ethics", "Ethical climate"], a:1, explanations:["Organizational ethics deals with the ethical principles and standards that guide the overall operation and culture of an organization. It is broader than guiding individual professionals in specific dilemmas.", "Professional ethics is specifically concerned with the moral principles and standards that guide the conduct of individuals within a particular profession. It provides a framework for professionals to navigate ethical dilemmas in their specialized field.", "Business ethics is a branch of applied ethics focusing on ethical questions that arise in a business context. While it may include professional ethics, it is a broader category that covers the entire business environment.", "Ethical climate refers to the shared perceptions among employees about how ethical issues should be handled in an organization. It describes the workplace environment rather than a prescriptive form of ethics for decision-making."]},
+  {freq:3, q:"For professionals to be trustworthy is a matter of both ethics and", opts:["Morals", "Values", "Competence", "None"], a:2, explanations:["Morals are personal principles regarding right and wrong conduct. While ethical conduct is essential, trustworthiness in a professional context requires more than just good moral intentions; it demands the ability to deliver.", "Values are fundamental beliefs that guide attitudes and actions. Ethical conduct is based on values, but true professional trustworthiness also depends on the capacity to execute responsibilities effectively.", "For professionals to be trustworthy, they must not only possess ethical conduct (right intention and values) but also have the competence (ability and skill) to perform their duties effectively and reliably. Trustworthiness relies on both 'what to do' (ethics) and 'how to do' (competence).", "This option is incorrect because 'competence' is a vital complementary aspect to ethics for a professional to be truly trustworthy."]},
+  {freq:3, q:"Accountability means being responsible for the choices you make (engineers' value highlighted)", opts:["Responsibility", "Honestly", "Loyalty", "Reliability"], a:0, explanations:["Accountability inherently means being responsible for one's actions, decisions, and outcomes. In UHV, responsibility is emphasized in various contexts, such as the Self's responsibility towards the Body (self-regulation) or towards relationships.", "Honesty is the quality of being truthful and sincere. While essential for ethical conduct, honesty is a specific virtue and not synonymous with the broader concept of being answerable for choices made.", "Loyalty refers to faithfulness or commitment to a person, group, or cause. An engineer's loyalty is desirable, but it does not define the act of being accountable for their specific choices and actions.", "Reliability implies consistency in performance and dependability. While a reliable engineer is valuable, reliability describes consistent output rather than the obligation to account for decisions."]},
+  {freq:3, q:"A written statement of policies and principles guiding behavior of all employees is called", opts:["Code of ethics", "Word of ethics", "Ethical dilemma", "None"], a:0, explanations:["A code of ethics is a formal, written document that outlines the ethical guidelines, principles, and standards of conduct expected from employees or members of an organization or profession. This is explicitly mentioned in the UHV notes in the context of professional ethics.", "This is not a recognized term in the context of professional or business ethics. It is a fabricated distractor.", "An ethical dilemma is a complex situation where choosing between two moral imperatives results in violating another. It describes a situation, not a written guide for behavior.", "This option is incorrect because 'Code of ethics' is the precise and widely accepted term for such a written statement."]},
+  {freq:3, q:"Competence in professional ethics refers to", opts:["Ability to utilize power effectively", "Ability to augment universal human order", "Ability to make profit", "None"], a:1, explanations:["While the ability to utilize power effectively is a skill, in the UHV framework, competence in professional ethics is about ensuring this power is used for ethical ends, not just effectively. It is not the ultimate definition on its own.", "Competence in professional ethics, within the UHV framework, is defined as the ability to align one's professional skills and conduct with the comprehensive human goal, thereby contributing to the development and strengthening of a harmonious universal human order.", "The UHV framework explicitly critiques the sole pursuit of profit maximization, which is seen as an outcome of animal consciousness. Professional ethics is about a broader contribution to human welfare and harmony, not just financial gain.", "This option is incorrect as 'Ability to augment universal human order' is a key aspect of competence in professional ethics as defined in UHV."]},
+  {freq:3, q:"Which can never be justified and could leave no winner — called", opts:["War Ethic", "General Ethic", "Global Ethic", "Codes of Ethic"], a:0, explanations:["War is a state of extreme conflict and opposition, which by its very nature leads to disharmony, suffering, and destruction. From a UHV perspective, it can never be holistically justified as it violates the principle of mutual fulfillment and leaves no true 'winner' in the pursuit of continuous happiness and prosperity.", "General ethic refers to broad moral principles, which can be justified in various contexts and do not inherently describe an unjustifiable, destructive act.", "Global ethic promotes universal moral principles aimed at peace and well-being for all, directly contrasting the idea of an action that leaves no winner. It is a desirable state, not an unjustifiable act.", "Codes of ethic are sets of rules or guidelines for conduct. The term does not describe an action that inherently leads to universal loss and cannot be justified."]},
+  {freq:3, q:"Process of value education is essentially", opts:["Self declaration", "Self exploration", "Self only", "None of these"], a:1, explanations:["Self declaration implies stating one's beliefs or values without undergoing a rigorous process of internal verification or external validation. This is contrary to the explorational nature of value education in UHV.", "The process of value education in UHV is fundamentally 'self-exploration'. It involves an internal dialogue to verify proposals based on one's natural acceptance and then validating them experientially in living.", "While the 'Self' is central to value education, calling the process 'self only' is vague and does not capture the dynamic, investigative, and reflective nature of self-exploration as defined in UHV.", "This option is incorrect because 'self-exploration' is explicitly identified as the core process for value education in the UHV notes."]},
+  {freq:3, q:"Right understanding can be recognized as it is", opts:["Assuring", "Satisfying", "Universal", "All of these"], a:3, explanations:["Right understanding is recognized as 'assuring' because it brings a sense of certainty, clarity, and peace within the individual. This is one of the three key characteristics, but not the only one.", "Right understanding is recognized as 'satisfying' because it leads to contentment and fulfillment, resolving contradictions and bringing inner harmony. This is another key characteristic, but not the only one.", "Right understanding is recognized as 'universal' because it holds good for all time (past, present, future), all places, and every individual, indicating its invariant and unchanging nature. This is a crucial characteristic, but not the only one.", "Right understanding is characterized by being assuring, satisfying, and universal (across time, space, and individuals). Since all these options describe true characteristics of right understanding, 'All of these' is the correct answer."]},
+  {freq:3, q:"Self-exploration is the process to find out 'What I am and What I really want to be' via two mechanisms:", opts:["Realization and understanding", "Natural and verifiable", "Natural acceptance & experimental validation", "Correctable and identifiable"], a:2, explanations:["Realization and understanding are the *outcomes* of self-exploration, representing the deeper clarity achieved. They are the goal of the process, not the mechanisms by which the exploration is carried out.", "Natural and verifiable are *guidelines for the content* of Value Education, ensuring that the proposals are universally applicable and can be tested, rather than being mechanisms of the self-exploration process itself.", "Self-exploration is a two-part process involving verifying proposals on the basis of one's natural acceptance (what is innately acceptable) and then validating them experientially in one's living (checking if they lead to mutual happiness and prosperity).", "Correctable and identifiable are not described in the UHV notes as the specific mechanisms of self-exploration. While the process may lead to correcting one's understanding and identifying true values, these terms do not represent the core methods of natural acceptance and experiential validation."]},
+  {freq:3, q:"The third order of nature is", opts:["Material order", "Animal order", "Plant order", "Human order"], a:1, explanations:["The term 'Material order' is not used as a distinct classification in the notes. Instead, the 'Physical order' (including units like air, water, metal) is the first order, consisting of material units.", "The notes classify nature into four orders: Physical order, Bio order (plant order), Animal order, and Human order. Therefore, the Animal order is indeed the third in this classification sequence.", "The 'Plant order' is referred to as the 'Bio order' in the notes and is explicitly listed as the *second* order of nature, not the third.", "The 'Human order', consisting of human beings, is explicitly listed as the *fourth* and final order in the classification of nature, not the third."]},
+  {freq:3, q:"Activities in the human body are", opts:["Composition", "Decomposition", "Respiration", "All of these"], a:3, explanations:["Composition (e.g., building up cells and tissues) is an activity of the human body, but it is not the sole activity. The body engages in a multitude of functions continuously.", "Decomposition (e.g., breaking down food, waste removal) is a fundamental activity within the human body. However, it is one of many processes and not all-encompassing on its own.", "Respiration (breathing) is a vital activity for the human body's survival and functioning. While essential, it is also just one of the numerous activities that the body performs.", "The human body, as a material entity, is involved in a continuous array of activities including processes of composition (growth, repair), decomposition (digestion, excretion), and maintaining life functions like respiration. Thus, all listed options are activities of the human body."]},
+  {freq:3, q:"The natural outcome of understanding harmony in nature leads to", opts:["Exploitation", "Dominance", "Mutual fulfillment", "Conflict"], a:2, explanations:["Exploitation is a consequence of human beings *not* understanding harmony in nature, leading to resource depletion and environmental problems. It is antithetical to a harmonious relationship with nature.", "Dominance, similar to exploitation, arises from a misconception of humans as masters over nature. It does not reflect a natural outcome of understanding harmony, which emphasizes mutual respect and coexistence.", "The notes explicitly state that there is 'interconnectedness and mutual fulfilment among the four orders in nature'. When human beings understand this inherent harmony, their role is to live accordingly, leading to mutual fulfilment with all orders of nature.", "Conflict (or 'struggle for survival') is a notion explicitly rejected in UHV as the fundamental design of nature. Instead, nature is inherently organized for mutual fulfilment, and conflict is a result of human misunderstanding."]},
+  {freq:3, q:"Right understanding helps identify the comprehensive human goal in terms of", opts:["Samadhan", "Samridhi", "Sah-astitva", "All of these"], a:3, explanations:["Samadhan (Resolution or Right Understanding and Right Feeling) is the human goal at the individual level, leading to happiness. While a crucial part, it's only one component of the comprehensive goal, which spans all levels of living.", "Samridhi (Prosperity) is the human goal at the family level, defined as the feeling of having more than required physical facility. This is a correct part of the comprehensive goal but does not encompass its entirety.", "Sah-astitva (Co-existence) is the human goal at the level of nature/existence, signifying mutual fulfilment. This is also a correct part of the comprehensive goal but is not the complete picture.", "The comprehensive human goal includes Samadhan (Right Understanding and Right Feeling) at the individual level, Samridhi (Prosperity) at the family level, Fearlessness (Trust) in society, and Sah-astitva (Co-existence) in nature/existence. Therefore, all these terms represent aspects of the overall goal."]},
+  {freq:3, q:"Globalization is defined as", opts:["Nationalization", "Glocalization", "Global linking", "National economies/business systems becoming deeply interlinked"], a:3, explanations:["Nationalization refers to the process of transferring a private industry or asset to public ownership or control. This is distinct from globalization, which involves the increasing interconnectedness between nations.", "Glocalization is the practice of conducting business according to both local and global considerations, adapting global products or services to local conditions. It is a strategy within globalization, not its overarching definition.", "Global linking is a vague term. While globalization involves various forms of global linking, it is more specifically defined by the deep and extensive interlinking of systems like economies and businesses.", "Globalization is fundamentally defined as the process by which national economies, cultures, and populations become increasingly interconnected and interdependent, particularly through cross-border trade, technology, and flows of investment, people, and information."]},
+  {freq:3, q:"First owner of a book's copyright is", opts:["Author", "Publisher", "Translator", "Printing press owner"], a:0, explanations:["Under copyright law, the individual who originally creates a literary work, such as a book, is legally recognized as the first owner of the copyright, granting them exclusive rights over its use and distribution.", "The publisher typically acquires specific rights from the author, often through a contract, to reproduce, market, and distribute the book. They are not the *initial* owner of the copyright, but a licensee.", "A translator creates a 'derivative work' based on an original. While they hold copyright over their specific translation, the copyright of the original book's content remains with its author.", "The printing press owner is responsible for the physical manufacturing of the book. Their role does not involve ownership of the intellectual property embodied in the book's content."]},
+  {freq:3, q:"Patent cannot be granted for the prohibited subject:", opts:["Traditional knowledge", "Arms", "Atomic energy", "Junk food"], a:2, explanations:["While the protection of traditional knowledge is a complex legal area, and traditional knowledge itself may not be patentable if it's already public, it is not broadly prohibited as a *subject* for patent applications in the same strict sense as certain other fields.", "Inventions related to arms and weaponry are generally patentable, although their manufacturing, trade, and use are heavily regulated due to national security implications and ethical considerations.", "In many jurisdictions, including India, inventions related to atomic energy are specifically excluded from patentability. This prohibition is primarily based on national security and public interest concerns, to prevent the monopolization of critical technologies.", "There is no general prohibition on patenting inventions related to food, including 'junk food.' Patents can be granted for novel and inventive food products, processes, or compositions, provided they meet standard patentability criteria."]},
+  {freq:2, q:"Identify the solution which helps human beings transform from animal to human consciousness.", opts:["Right understanding", "Realization", "Value education", "Physical facilities"], a:0, explanations:["Right understanding is identified as the foundational solution. It is the first priority among the three requirements (right understanding, relationship, physical facility) and is essential for holistic development and the transformation from animal to human consciousness.", "Realization is a higher state of understanding, such as the realization of co-existence, that arises *from* the process of right understanding. It is a result or an achievement, not the initial solution itself.", "Value education is the *process* or the *means* through which right understanding is developed and facilitated. While crucial, it is the educational framework, not the direct solution in terms of a state of being.", "Physical facilities are necessary for human beings but are insufficient for transformation. Living solely for physical facilities is characteristic of animal consciousness, so they cannot be the solution for transforming *away* from it."]},
+  {freq:2, q:"What are the basic desires of every human being for which they are working?", opts:["Physical facilities", "Realization and understanding", "Happiness and prosperity", "Continuous happiness and prosperity"], a:3, explanations:["Physical facilities are necessary for human beings, but they are not the ultimate basic desire. Humans often mistakenly assume that happiness and prosperity will automatically result from accumulating physical facilities, yet physical facilities alone are inadequate for sustained fulfillment.", "Realization and understanding are critical *means* to achieve continuous happiness and prosperity. They facilitate the clarity required for fulfillment but are not the fundamental desires themselves.", "While happiness and prosperity are aspirations, the UHV framework specifically highlights the desire for their *continuity*. Fleeting moments of happiness or transient prosperity do not fulfill the deepest human aspiration.", "The notes clearly state that every human being has a natural acceptance for the 'continuity of happiness and prosperity'. These are explicitly identified as the basic human aspirations for which all individuals are ultimately working."]},
+  {freq:2, q:"What is the main component of our program to understand and live in harmony at all levels of living?", opts:["Right Understanding", "Relationship", "Self-exploration", "Physical facilities"], a:0, explanations:["Right Understanding is identified as the first and most fundamental priority among the three core requirements (Right Understanding, Relationship, Physical Facility). It forms the basis for correctly understanding and living in harmony at all four levels of being.", "Relationship is the second priority, ensuring mutual happiness in human-human interactions. While crucial for societal harmony, it is not the overarching main component that underpins all levels of living, including individual self-harmony.", "Self-exploration is the *process* or *methodology* used to attain right understanding. It is a means to achieve the main component (right understanding), not the component itself.", "Physical facilities are the third priority and are necessary for mutual prosperity with nature. However, they are insufficient for comprehensive harmony across all levels and are dependent on right understanding for their proper identification and utilization."]},
+  {freq:2, q:"The 'Self' is central to human existence and ___ is central to existence.", opts:["Coexistence", "Nature", "Struggle", "Society"], a:0, explanations:["The notes define Existence as 'Co-existence – Units submerged in Space'. Just as the 'Self' is the conscious core of a human being, 'Co-existence' is presented as the fundamental, all-pervading truth that defines the entire existence.", "Nature is described as the 'collection of all the units' within existence (Physical, Bio, Animal, Human orders). While an integral part of existence, nature itself is not considered the central defining principle in the same ultimate sense as co-existence.", "The concept of 'struggle' (e.g., 'struggle for survival') is explicitly rejected by UHV as a fundamental characteristic of nature or existence. Instead, the inherent design is one of mutual fulfillment and harmony, not conflict.", "Society is one of the four levels of human living and is an extension of the family. It is a human construct within the larger order of nature and existence, not the central principle of existence itself."]},
+  {freq:2, q:"What is the perception associated with stimulation of a sense organ called?", opts:["Happiness", "Recognizing", "Sensation", "All of the above"], a:2, explanations:["Happiness is defined as a state of harmony or synergy within oneself, not merely a perception arising from the stimulation of a sense organ. It is a deeper, continuous state of being aligned with one's natural acceptance.", "Recognizing is an activity of the Self and the Body where a unit identifies its relationship with another unit. While it involves processing information, it is a step in the overall response rather than the initial perception from a sense organ itself.", "Sensation is the information we receive from the Body through our five sense organs (sound, touch, sight, taste, and smell). This direct input from the body is a major source of our imagination and desire, particularly when seeking momentary pleasure or excitement.", "This option is incorrect because happiness is a state of harmony and recognizing is an activity of perception and fulfillment, neither of which precisely describes the initial perception associated with the stimulation of a sense organ."]},
+  {freq:2, q:"Human to rest of nature interaction is called", opts:["Work", "Behavior", "Production", "System"], a:0, explanations:["Work is explicitly defined as the effort a human being does on the rest of nature. This interaction results in the production of physical facilities, and when done ethically, it leads to mutual prosperity and enrichment of nature.", "Behavior refers specifically to human-human interaction, which is governed by feelings in relationships and aims for mutual happiness. It is distinct from interaction with the rest of nature.", "Production is the physical facility obtained from work done on nature. It is the *outcome* of the interaction, rather than the interaction itself. Work is the activity, production is the result.", "System refers to larger organizational structures or dimensions of human order in society (like education-sanskar or justice-preservation), not the direct interaction between human beings and nature."]},
+  {freq:2, q:"What types of families do we see in cities mostly?", opts:["Nuclear Family", "Joint family", "Matrilineal family", "All of the above"], a:0, explanations:["The provided UHV notes do not explicitly categorize family types prevalent in cities. However, the notes mention the 'breaking up of joint families' as a societal problem, which implicitly suggests that nuclear families or smaller family units might be more common, particularly in urban settings, although this is not directly stated in the text.", "The notes discuss joint families, particularly in the context of their breaking up being a societal problem. While joint families exist, the notes do not state they are the most common in cities.", "The term 'Matrilineal family' is not mentioned or discussed within the provided UHV lecture notes as a type of family structure, let alone one prevalent in cities.", "This option is incorrect as the notes do not provide a direct answer or classification for family types seen mostly in cities, although the mention of 'breaking up of joint families' implies a shift towards other forms."]},
+  {freq:2, q:"What is the result of family feuds?", opts:["Depression", "Anxiety", "Sleeplessness", "All of the above"], a:3, explanations:["Family feuds arise from contradictions and conflicts in relationships, which the notes state directly lead to 'tension, frustration, depression, one-upmanship, psycho-somatic disorders'. Thus, depression is a direct result.", "Similar to depression, anxiety is a psychological distress that results from internal contradictions and conflicts within relationships, which are exacerbated by family feuds, as indicated by the notes' mention of 'tension' and 'psycho-somatic disorders'.", "Sleeplessness is a common physiological symptom of stress, tension, and anxiety that arises from unresolved conflicts and disharmony in relationships, such as family feuds. It falls under the umbrella of 'psycho-somatic disorders' mentioned in the notes.", "Family feuds are manifestations of disharmony and contradiction in relationships. The notes link such conflicts to 'tension, frustration, depression, one-upmanship, psycho-somatic disorders'. Therefore, depression, anxiety, and sleeplessness (as components of psychological distress and psycho-somatic issues) are all potential results."]},
+  {freq:2, q:"Which are tricks for peace in family?", opts:["Learn to respect each other's thoughts", "Never take relations as granted", "Both a and b", "Only a"], a:2, explanations:["Learning to respect each other's thoughts aligns with the UHV principle that 'Respect is right evaluation', which includes recognizing that the other is similar in purpose, program, and potential. Respecting thoughts contributes to mutual happiness in relationships.", "Never taking relations for granted emphasizes the continuous need to recognize and fulfill relationships, rather than assuming they will sustain without conscious effort. This aligns with the UHV understanding that relationship 'is already there, we only need to understand it' and 'fulfil it'.", "While the term 'tricks' is not used in UHV, both 'learning to respect each other's thoughts' and 'never taking relations as granted' are fundamental principles from the notes that contribute to establishing and maintaining harmony and peace in a family by ensuring right understanding and fulfillment in relationships.", "This option is incomplete. Both respecting thoughts and actively fulfilling relationships (not taking them for granted) are crucial for family harmony, making 'both a and b' a more comprehensive answer based on UHV principles."]},
+  {freq:2, q:"Following is NOT the unit of harmony in nature:", opts:["Soil", "Bird", "Human", "Air"], a:2, explanations:["Soil is a unit of the Physical Order, which is one of the four orders of nature. The notes state that the first three orders (Physical, Bio, Animal) are mutually fulfilling, thus contributing to harmony in nature.", "A bird is a unit of the Animal Order, another of the four orders of nature. Animals are described as participating in mutual fulfillment with other orders, thus contributing to harmony in nature.", "While human beings have the potential and natural acceptance to live in harmony, the notes explicitly state that 'Human being is not only unfulfilling for the other three orders, rather it is dominating and exploiting them'. Therefore, from a practical standpoint in the current scenario, humans are often a source of disharmony, and thus currently 'NOT the unit of harmony' in practice.", "Air is a unit of the Physical Order, just like soil. It participates in mutually fulfilling relationships with other orders, such as nurturing plants, and thus contributes to harmony in nature."]},
+  {freq:2, q:"Nature is organised such that physical facility required for any order is available in abundance — True or False?", opts:["True", "False", "-", "-"], a:0, explanations:["The notes explicitly state that 'Nature is organised in such a manner that the physical facility required for any order is available in abundance.' This includes the quantity of physical order being greater than the bio order, and so on, down to the human order.", "This statement contradicts the core UHV teaching that nature inherently provides for all orders in abundance. The problem is not lack of resources, but rather human misunderstanding and misuse.", "This option is not applicable for a true/false question.", "This option is not applicable for a true/false question."]},
+  {freq:2, q:"The efforts of an individual to have a systematic arrangement of the entire universe, initiating from the individual, is called", opts:["Universal human order", "Universal human education", "Universal human constitute", "None"], a:0, explanations:["Universal Human Order describes the harmonious networking between the basic unit (family) and their clusters, successively moving from family order to world family order. It is the societal manifestation of living in co-existence, creating a systematic arrangement of the entire existence based on right understanding.", "Universal human education is the means or process to develop right understanding and competence in human beings. It facilitates the transformation towards human consciousness, but it is not the systematic arrangement of the universe itself.", "Humanistic Constitution is a policy framework that provides clear guidance for human welfare and the development of an un-fragmented human society. It is a basis for the order, but not the order itself spanning the entire universe.", "This option is incorrect because 'Universal human order' accurately describes the systematic arrangement of the entire universe, initiated by individual understanding and extending through society, as described in UHV."]},
+  {freq:2, q:"Rama returns borrowed money as promised — example of", opts:["Professional ethic", "Personnel ethic", "Both A & B", "None"], a:2, explanations:["If Rama's profession involves financial dealings or trust, her act of returning borrowed money as promised would be a direct demonstration of professional ethics. It shows integrity and reliability, crucial aspects of ethical conduct in any profession.", "Personnel ethics (or personal ethics) refers to an individual's moral principles and values that guide their behavior. Rama's act of returning money as promised is a clear example of personal integrity and trustworthiness, which are core ethical values.", "Returning borrowed money as promised is an act rooted in trustworthiness and integrity. These qualities are fundamental to both personal conduct ('personnel ethic') and professional conduct ('professional ethic'), as ethical behavior should ideally pervade all aspects of a human being's life. Therefore, it is an example of both.", "This option is incorrect because the act clearly exemplifies ethical behavior that is relevant to both personal and professional spheres, making 'Both A & B' the most fitting answer."]},
+  {freq:2, q:"Theory/principle of ethics that go parallel:", opts:["Beneficence and theory of virtue ethics", "Fiduciary and principles theory of ethics", "Justice and Kantianism theory", "Respect for Autonomy and critical theory"], a:0, explanations:["The terms 'Beneficence' and 'theory of virtue ethics', along with other specific ethical theories mentioned in the options, are not defined or discussed within the provided Universal Human Values lecture notes. UHV establishes its own framework for ethical human conduct based on right understanding and natural acceptance rather than comparative study of Western philosophical ethics.", "The terms 'Fiduciary' and 'principles theory of ethics' are not part of the core UHV curriculum as presented in the provided notes. UHV's approach to ethics stems from an understanding of harmony and co-existence, rather than established external theories.", "'Justice' in UHV is defined as the recognition, fulfillment, and evaluation of human-human relationships leading to mutual happiness. 'Kantianism theory' is a specific Western ethical framework not covered in the notes, making a direct parallel within the scope of the provided material impossible.", "The terms 'Respect for Autonomy' and 'critical theory' are not introduced or explained in the provided UHV lecture notes. Therefore, based on the given source material, it is not possible to draw connections between these specific ethical theories."]},
+  {freq:2, q:"Complex/rapidly changing innovation in engineering leads to", opts:["Need for rigid ethics", "Need for adaptive engineering", "Unfamiliar ethical circumstances", "Both b and c"], a:3, explanations:["UHV emphasizes ethical human conduct derived from right understanding, which is definite yet flexible. A 'rigid ethics' would likely struggle to adapt to new scenarios created by complex innovations, potentially causing more conflict rather than harmony.", "Rapid technological change often necessitates that engineering approaches themselves become more adaptive to address new problems and contexts. While 'adaptive engineering' isn't explicitly defined, the need for adaptability is implicit when addressing the evolving challenges posed by innovation.", "When innovations introduce entirely new capabilities or interactions, existing ethical guidelines may not fully cover the implications. This creates 'unfamiliar ethical circumstances' and dilemmas that require deeper reflection and right understanding, a concept aligned with the UHV emphasis on understanding the long-term impact of actions.", "Complex and rapidly changing innovation in engineering often leads to both the need for engineering practices to adapt ('adaptive engineering') and the emergence of new, challenging ethical questions not encountered before ('unfamiliar ethical circumstances'). The notes highlight how a lack of a holistic worldview in innovation can lead to 'counterproductive' outcomes and 'human welfare' issues, implying both technical and ethical adaptation are required."]},
+  {freq:2, q:"Most accurate statement about ethics and law:", opts:["Ethical behavior at times may be illegal", "Legal standards always = ethical benchmark", "Legal is always ethical", "None"], a:0, explanations:["Ethical behavior, based on right understanding and universal human values, sometimes goes beyond legal requirements or may even, in rare cases (e.g., principled civil disobedience), conflict with existing laws. The UHV perspective is that ethical conduct is 'self-satisfying, people-friendly, eco-friendly and universal,' which may not always be perfectly aligned with every law at a given time.", "This statement is inaccurate. Legal standards typically represent a minimum acceptable behavior, while ethical benchmarks, derived from deep understanding of human values and harmony, often strive for a higher, more comprehensive standard of conduct.", "This statement is incorrect. An action can be legal (not forbidden by law) but still be considered unethical if it causes harm, disrespect, or exploits others, even if within legal bounds. Ethics is a broader concept than legality.", "This option is incorrect because the statement 'Ethical behavior at times may be illegal' accurately reflects the nuanced relationship between ethics and law, where ethical considerations can extend beyond legal dictates."]},
+  {freq:2, q:"Investment professionals have a special responsibility to act ethically because", opts:["Industry heavily regulated", "Profession adopted a code of ethics", "They are entrusted to protect client's assets", "None"], a:2, explanations:["While the industry is regulated, ethical conduct in UHV stems from an individual's right understanding and commitment, not merely external rules. Regulation is a symptom of lacking ethical conduct, not its root cause or primary motivator.", "A code of ethics provides guidelines, but the fundamental reason for ethical action is the professional's intrinsic responsibility and commitment to human values, ensuring mutual fulfillment, rather than just adherence to a document. Codes define, but don't create, ethics.", "This is correct. UHV emphasizes trust and responsibility in relationships. Investment professionals are entrusted with clients' financial assets, which places a special responsibility on them to act ethically to protect these assets and ensure the client's prosperity, aligning with the principle of mutual fulfillment.", "This is incorrect because the statement about protecting client's assets clearly identifies a special responsibility, making one of the options a valid reason."]},
+  {freq:2, q:"An organization's appropriate tone at the top promoting ethical conduct is example of:", opts:["Ethic sensitivity", "Ethic incentives", "Ethical behavior", "Consequentialist"], a:2, explanations:["Ethical sensitivity refers to the ability to recognize ethical issues. While important, 'tone at the top' is more about the active demonstration and promotion of ethical values by leadership, which is a form of active ethical expression rather than mere recognition.", "Ethic incentives are rewards or motivators for ethical behavior. While incentives might be part of an ethical framework, 'tone at the top' primarily describes the leadership's expressed attitude, example, and commitment, which is a behavioral aspect itself, rather than a system of rewards.", "This is correct. An organization's 'tone at the top' refers to the leadership's demonstrated commitment to ethical principles through their actions, decisions, and communication. This sets a behavioral standard for the entire organization, embodying ethical conduct in practice.", "Consequentialist ethics judges actions based on their outcomes. 'Tone at the top' describes the manner in which ethics are promoted and enacted within an organization, which is a form of behavior, rather than a philosophical approach to evaluating the consequences of actions."]},
+  {freq:2, q:"According to Australian Education and Training Dept, Canberra (2006), teachers' code of professional practice is based on how many principles?", opts:["Three", "Five", "Seven", "None"], a:1, explanations:["This is incorrect. The specific number of principles referenced for this code of practice within the UHV curriculum's external details is not three.", "This is correct. According to specific information mentioned in the UHV curriculum's context, the teachers' code of professional practice per the Australian Education and Training Dept. is based on five principles. This is specific factual recall from external references sometimes included in the course.", "This is incorrect. The specific number of principles referenced for this code of practice within the UHV curriculum's external details is not seven.", "This is incorrect, as a specific number of principles (five) is identified for the teachers' code of professional practice in the curriculum's context."]},
+  {freq:2, q:"Core values of teaching profession per General Teaching Council of N. Ireland (2004) include", opts:["Trust, Honesty, Commitments", "Respect, Fairness, Equality", "Integrity, Tolerance, Service", "All of the above"], a:3, explanations:["While Trust, Honesty, and Commitments are indeed vital for the teaching profession and align with UHV, this option is incomplete as it does not encompass the full range of core values that would typically be included in a comprehensive professional code of ethics.", "Respect, Fairness, and Equality are crucial values in fostering a harmonious and just educational environment, as highlighted in UHV. However, this option is also incomplete, missing other essential values that define ethical conduct in teaching.", "Integrity, Tolerance, and Service are significant qualities for a professional, reflecting dedication to truthfulness, acceptance of diversity, and contribution to society. Yet, this option is incomplete when considering a full set of core professional values.", "This is correct. In the context of Universal Human Values, a holistic approach to professional ethics would naturally include all the values listed across the other options: Trust, Honesty, Commitments, Respect, Fairness, Equality, Integrity, Tolerance, and Service. These are all naturally acceptable feelings and principles for ensuring mutual fulfillment and competence."]},
+  {freq:2, q:"Providing guidance and offering inspiration — both essential roles of a code of ethics?", opts:["No, only guidance", "No, only inspiration", "Both are not essential", "Yes, both are essential"], a:3, explanations:["This is incorrect. A code of ethics is intended to both direct actions (guidance) and motivate individuals to uphold higher standards (inspiration), making both roles essential for comprehensive ethical development.", "This is incorrect. Inspiration alone is insufficient; a code of ethics also needs to provide practical guidance on how to apply ethical principles in specific professional contexts to ensure definite human conduct.", "This is incorrect. Both guidance and inspiration are fundamental functions of a code of ethics, as they work together to inform ethical decision-making and foster a sustained commitment to ethical living.", "This is correct. A code of ethics serves two vital functions: it provides clear guidance on appropriate conduct, helping professionals understand 'what to do', and it offers inspiration by articulating aspirational standards, motivating a deeper commitment to ethical living and self-evolution."]},
+  {freq:2, q:"The purpose of value education is to", opts:["Foster universal core values", "Make syllabus easy", "Develop values in individuals", "Both A and C"], a:3, explanations:["This option is partially correct as fostering universal core values is a key aim of value education. However, it is not the complete purpose, as it also focuses on the individual's internal development.", "This is incorrect. The purpose of value education is to facilitate holistic development by providing clarity on human aspirations and values, not to simplify the academic syllabus.", "This option is partially correct. Value education aims to help individuals discover and internalize values. However, it's not just about developing values in individuals, but fostering universal ones relevant to all humanity.", "This is correct. Value education aims to both 'foster universal core values' (A) by making individuals aware of what is universally valuable, and to 'develop values in individuals' (C) by enabling them to understand and live by these values for a fulfilling life."]},
+  {freq:2, q:"Once we know what is valuable to us, these values become the anchor for ___.", opts:["Knowledge", "Actions", "Society", "None of these"], a:1, explanations:["Values are understood through knowledge, but knowledge itself is a tool for understanding. Values primarily serve as guiding principles for our subsequent actions rather than anchoring knowledge.", "This is correct. According to UHV, once a human being gains right understanding and identifies what is truly valuable, these values naturally guide all their desires, thoughts, and expectations, thereby becoming the basis or 'anchor' for their behavior and work (actions) in living.", "While values are expressed and lived in society, society is the larger order in which values are manifested, not what the values themselves anchor. Values first anchor individual conduct, which then shapes society.", "This is incorrect because the clear connection between values and actions makes one of the options correct."]},
+  {freq:2, q:"Which encompassing principles underlie successful implementation of value education? (Conviction, Connection, Critical thinking, Commitment)", opts:["A, C and D only", "B, C and D only", "A, B and D only", "None of these"], a:2, explanations:["This option is incomplete. While conviction, critical thinking, and commitment are important, connection (dialogue) is also a fundamental aspect of the self-exploration process in value education.", "This option is incomplete. While connection, critical thinking, and commitment are vital, conviction, arising from self-verification, is necessary for deeply internalizing values and authentic living.", "This is correct. Successful implementation of value education relies on 'conviction' (A) from self-verification, 'connection' (B) through dialogue between oneself and others, and 'commitment' (D) to live by the understood values. While critical thinking (C) is a tool for rationality, it is often seen as a method within the process, rather than an overarching underlying principle.", "This is incorrect because a specific combination of principles from the given list is identified as underlying the successful implementation of value education."]},
+  {freq:2, q:"Human life is lived at four levels: Individual, Family, Society and ___", opts:["Nature", "Nurture", "World", "Universe"], a:0, explanations:["This is correct. Universal Human Values identifies four fundamental levels of human living: as an Individual human being, as a member of a Family, as a member of Society, and as a unit in Nature/Existence. Harmony is sought at all these levels.", "Nurture refers to the process of caring for and encouraging development, which is an activity within human living, not a distinct level of human interaction or existence in the UHV framework.", "While 'world' encompasses aspects of society and nature, the precise term used in UHV to describe the fourth level of human living for ensuring harmony is 'Nature/Existence'.", "While 'universe' is a very broad concept, UHV specifically delineates the four levels of human living and interaction, with 'Nature/Existence' being the term for the broadest level relevant to human harmony."]},
+  {freq:2, q:"Any course content on value education needs to be", opts:["Universal", "Rational", "Natural", "All of these"], a:3, explanations:["While universal applicability (to all human beings, at all times and places) is a mandatory guideline for value education content, this option is incomplete as other equally important criteria must also be met.", "While rationality (appealing to reasoning, not blind beliefs) is a crucial guideline for value education content, this option is incomplete as other essential criteria must also be fulfilled.", "While naturalness (naturally acceptable to human beings) and verifiability (experientially validated) are vital guidelines for value education content, this option is incomplete as other essential criteria must also be satisfied.", "This is correct. For value education content to be truly effective and appropriate, it must adhere to all the stated guidelines: it must be Universal, Rational, and Natural and Verifiable. These criteria ensure that the values are deeply understood and adopted by individuals."]},
+  {freq:2, q:"Value education enables us to", opts:["Understand our needs", "Visualize our goals correctly", "Indicate direction for fulfillment", "All of the above"], a:3, explanations:["While understanding our needs is a key outcome of value education, it is only one part of a more comprehensive enablement. Value education also guides us towards visualizing goals and fulfilling them, making this option incomplete.", "Visualizing our goals correctly is an important aspect that value education facilitates. However, it also provides clarity on our basic needs and the direction for fulfilling those goals, indicating a broader scope than this single point.", "Indicating the direction for fulfillment is a crucial function of value education, as it helps in devising a program for living in harmony. However, this is built upon understanding needs and visualizing goals, making this option incomplete on its own.", "This is correct. Value education holistically enables us to understand our true needs, visualize our goals accurately for a fulfilling life, and provides the necessary direction for their fulfillment. It addresses the 'what to do' aspect of human existence comprehensively."]},
+  {freq:2, q:"I being the —", opts:["Doer, seer and Enjoyer", "Doer", "Seer", "Enjoyer"], a:0, explanations:["This is correct. In UHV, the 'Self' (I) is considered the conscious entity and has three fundamental roles: the 'Seer' (the one that sees/understands), the 'Doer' (the one that takes decisions), and the 'Enjoyer' (the one that experiences happiness or unhappiness). The body is merely an instrument of the Self.", "While the Self is indeed the 'Doer' (the one that takes decisions), this option is incomplete as it omits the equally important roles of the Self as the 'Seer' and the 'Enjoyer' in human existence.", "While the Self is the 'Seer' (the one that understands or sees), this option is incomplete. The Self also takes action (Doer) and experiences the outcome (Enjoyer), which are integral to its identity.", "While the Self is the 'Enjoyer' (the one that experiences happiness or unhappiness), this option is incomplete. It neglects the Self's roles as the 'Seer' and the 'Doer,' which are fundamental to how it interacts with and experiences existence."]},
+  {freq:2, q:"Which of the following is NOT a response of the self?", opts:["Knowing", "Assuming", "Recognizing", "Preconditioning"], a:3, explanations:["Knowing is a fundamental activity and response of the Self, enabling direct observation and understanding of reality. It is a key aspect of how the Self interacts with existence.", "Assuming is a response of the Self where it accepts certain ideas or beliefs, which may or may not be based on complete knowing. This activity determines the Self's subsequent recognition and fulfillment.", "Recognizing is an activity of the Self (and also the Body), where it identifies its relationship with other entities. In the Self, recognition is influenced by assuming.", "Preconditioning is a source of imagination for the Self, referring to unverified beliefs or notions adopted from society. It is not a response of the Self, but rather an input that can influence its desires, thoughts, and expectations."]},
+  {freq:2, q:"Activities of self (I) are", opts:["Happiness", "Prosperity", "Desire, thought and expectation", "None"], a:2, explanations:["Happiness is the need of the Self and its basic aspiration, not an activity of the Self. It is the state of harmony that the Self strives for.", "Prosperity is the feeling of having more than required physical facilities, which is a goal of the Self when interacting with the Body and nature. It is not an intrinsic activity of the Self.", "Desire, thought, and expectation are the continuous activities of the Self that together constitute imagination. These activities are fundamental to the Self's existence.", "This option is incorrect because 'Desire, thought and expectation' correctly describes the activities of the Self, making 'None' an invalid choice."]},
+  {freq:2, q:"The requirement of the body is right utilization and", opts:["Desire", "Nurturing", "Thought", "Expectation"], a:1, explanations:["Desire is an activity of the Self, not a requirement of the Body. The Body requires physical facility, which the Self uses to fulfill its responsibility towards the Body.", "Nurturing is one of the three core responsibilities of the Self towards the Body, along with protection and right utilization. It involves providing appropriate physical inputs like food, water, and air.", "Thought is an activity of the Self, specifically analyzing and comparing possibilities to fulfill desires. It is not a requirement of the material Body.", "Expectation is an activity of the Self, involving selecting based on tasting. It pertains to the Self's imagination, not a direct requirement for the Body's maintenance."]},
+  {freq:2, q:"The ___ is an instrument of ___", opts:["I, Body", "Body, I", "Both a and b", "None"], a:1, explanations:["This option is incorrect because the Self ('I') is the sentient entity, the seer, doer, and enjoyer, which *uses* the Body as its instrument. The Body is not an instrument of 'I'.", "The Body is an instrument of the Self ('I'). The Self is central to human existence and uses the Body to express its decisions, behave with other humans, and work with nature.", "This option is incorrect as the relationship is unidirectional: the Body serves the Self. The Self is not an instrument of the Body.", "This option is incorrect because the relationship between the Self and Body as instrument and user is clearly defined in UHV."]},
+  {freq:2, q:"The activity of desire, thought and expecting together is called", opts:["Body", "Health", "Imagination", "Future"], a:2, explanations:["The Body is the material component of a human being, with its own distinct needs and activities, but it does not encompass desire, thought, and expectation. These are activities of the Self.", "Health (Swasthya) is a state of harmony in the Body, resulting from the Self's feeling of self-regulation. It is an outcome, not a combination of mental activities.", "Imagination is the collective term for the continuous activities of desire (imaging), thought (analyzing/comparing), and expectation (selecting/tasting) within the Self. It reflects 'what I am'.", "Future refers to a time dimension and is not a term used to describe the combination of desire, thought, and expectation in the Self. These activities are continuous in the present."]},
+  {freq:2, q:"Imaging is ___ with time", opts:["Continuous", "Discontinuous", "Random", "Different"], a:0, explanations:["Imaging, which is the activity of desire, is continuous with time in the Self. The activities of desire, thought, and expectation are always ongoing, whether we are aware of them or not.", "This option is incorrect as imaging, as a part of the Self's imagination, is described as continuous, not discontinuous. It is an inherent, unceasing activity.", "While imagination can sometimes feel random or disorganised, the underlying activities of imaging (desire) themselves are continuous. 'Random' describes the *state* of imagination, not its temporal nature.", "This option is incorrect as the continuity of imaging is a fundamental characteristic of the Self, which does not change to become 'different' with time in its inherent nature."]},
+  {freq:2, q:"Knowing means having the", opts:["Assumption", "Right understanding", "Right feeling", "None"], a:1, explanations:["Assumption is a belief accepted by the Self, which may or may not be based on complete understanding. Knowing, in contrast, implies seeing reality as it is, leading to right understanding.", "Knowing is the activity of the Self that enables it to see reality as it is, in its completeness, directly and definitely. This leads to right understanding, which is definite, continuous, and universal.", "Right feeling is a state of harmony in the Self, resulting from right understanding and expressed in relationships. While related, knowing is the underlying activity that leads to right understanding, which in turn informs right feeling.", "This option is incorrect as 'right understanding' is the precise definition of 'knowing' within UHV, making 'None' an invalid choice."]},
+  {freq:2, q:"Ensuring right understanding and feeling in others is called", opts:["Care", "Affection", "Gratitude", "Guidance"], a:0, explanations:["Care is the feeling of responsibility and commitment for nurturing and protecting the *Body* of one's relative. It focuses on the physical well-being, not the Self-development of the other.", "Affection is the feeling of being related to the other, an acceptance of them as a relative. While it fosters a positive relationship, it doesn't specifically refer to ensuring right understanding and feeling in them.", "Gratitude is the feeling of acceptance for those who have made an effort for *my* excellence, acknowledging their contribution to one's own self-development. It is not about enabling others' understanding.", "Guidance is the feeling of responsibility and commitment for the development of the *Self* of one's relative, specifically by ensuring right understanding and right feeling in them."]},
+  {freq:2, q:"Harmony in the family is the building block for harmony in the", opts:["Society", "Individual", "Friend", "Relative"], a:0, explanations:["The family is explicitly identified as the basic unit or building block of human organization. Harmony within the family is foundational for extending harmony to the larger collective, which is society.", "While harmony begins within the individual, the question refers to 'harmony in the family' as a building block for a *larger* order, which is society, not the individual. The individual is prior to the family.", "A friend is an individual in a relationship, but not a collective unit that serves as a general building block for the structure of society in the same way a family does.", "A relative is an individual connected by relationship, usually within a family. The family itself, as a unit, is the building block for the larger societal order."]},
+  {freq:2, q:"Comprehensive human goal is right understanding, prosperity, trust (fearlessness) and", opts:["Co-existence", "Happiness", "Abhay", "None"], a:0, explanations:["Co-existence is the fourth component of the comprehensive human goal, achieved at the level of nature and existence, representing mutual fulfillment with all units in nature. This completes the holistic aspiration.", "Happiness is a desired state resulting from right understanding and right feeling in the individual. It is encompassed within the overall goal of 'right understanding and right feeling' for every individual, but is not the distinct fourth component at the macro level.", "Abhaya (fearlessness) is synonymous with trust, which is already listed as the third component of the comprehensive human goal, to be achieved at the level of society.", "This option is incorrect because 'co-existence' is a key component, making 'None' an invalid choice. The four goals are right understanding, prosperity, fearlessness, and co-existence."]},
+  {freq:2, q:"There is justice in relationship when there is", opts:["Mutual fulfillment", "Self regulation", "Freedom", "None"], a:0, explanations:["Justice is defined as the recognition, fulfillment, and evaluation of human-human relationships, which ultimately leads to mutual happiness. Mutual fulfillment is the direct outcome and indicator of justice in a relationship.", "Self-regulation (Sanyam) is the feeling of responsibility in the Self towards the Body, ensuring its nurturing, protection, and right utilization. It is related to harmony within the individual, not directly to justice in relationships.", "Freedom, in the context of UHV, refers to the state of being self-organized (Swatantrata), living with continuous happiness. While desirable, it is a broader state of being and not the direct condition for justice in a relationship.", "This option is incorrect because 'mutual fulfillment' is the explicit outcome of justice, making 'None' an invalid choice."]},
+  {freq:2, q:"The extension of family is", opts:["Self", "Body", "Society", "Nature"], a:2, explanations:["The Self is the conscious entity within a human being. The family extends to larger social units, not to the individual Self.", "The Body is the material aspect of a human being. The family unit expands to include more human beings in a structured order, which is society, not the physical body.", "Society is understood as an extension of the family, forming successively larger and larger complementary units from family order to world family order. The family is the basic unit from which this societal order develops.", "Nature refers to the collection of all units in existence, including human beings, animals, plants, and physical entities. While human beings live in harmony with nature, 'society' is the direct extension of family in terms of human-human interaction."]},
+  {freq:2, q:"Feeling of relatedness to all human beings is called", opts:["Love", "Affection", "Gratitude", "Respect"], a:0, explanations:["Love is defined in UHV as the feeling of being related to everyone, to all human beings. It is considered the complete value among the nine universal feelings in human relationships, representing an expansive sense of connection.", "Affection is the feeling of being related to a particular other. While it is a foundational feeling, love is distinguished as the expansion of this feeling to encompass all beings, making affection a more specific or initial stage.", "Gratitude is the feeling of acceptance and appreciation for those who have made an effort for one's excellence or have helped in one's journey of understanding and living in harmony. It is a specific feeling of thankfulness, not general relatedness.", "Respect is defined as the right evaluation of a person, acknowledging their inherent similarity in purpose, program, and potential. While crucial for healthy relationships, it is a distinct feeling focused on evaluation rather than the overarching feeling of relatedness to all."]},
+  {freq:2, q:"According to quantity, order of magnitude in nature:", opts:["Bio>>Physical>>Animal>>Human", "Animal>>Bio>>Physical>>Human", "Physical>>Bio>>Animal>>Human", "None"], a:2, explanations:["This order is incorrect. The UHV framework clearly states that the Physical order is the most abundant, ensuring that the needs of subsequent orders are met. Bio (plant) order, while abundant, is not the largest in magnitude.", "This sequence is incorrect. The Animal order is not more abundant than the Bio (plant) or Physical orders. The natural arrangement in UHV posits that each preceding order provides the necessary resources in abundance for the orders that follow it.", "This option is correct. In Universal Human Values, the four orders of nature are classified by quantity (abundance) in descending order: Physical order (most abundant), followed by Bio (plant) order, then Animal order, and finally Human order (least abundant). This natural hierarchy ensures mutual fulfillment and sustainability.", "This option is incorrect because there is a specific, well-defined order of magnitude for the four orders in nature according to UHV, which is Physical >> Bio >> Animal >> Human."]},
+  {freq:2, q:"Systems in nature are", opts:["Cyclic", "Mutually fulfilling", "Both a and b", "None"], a:2, explanations:["Nature's systems operate in cycles, demonstrating phenomena like the water cycle and nutrient recycling, which are vital for maintaining ecological balance and continuity. This characteristic highlights nature's self-regulation.", "All units and orders within nature are interconnected and mutually fulfilling. They support and complement each other, ensuring that the entire existence operates in harmony and sustains itself, which is a core tenet of UHV.", "This option is correct. According to UHV, the systems in nature are characterized as both cyclic and mutually fulfilling. They exhibit cyclical processes for renewal and self-regulation, and all elements within them interact in a way that provides for and enriches one another, maintaining overall harmony.", "This option is incorrect because the systems in nature are explicitly described as cyclic and mutually fulfilling within the Universal Human Values framework, pointing to a definite characteristic."]},
+  {freq:2, q:"Natural characteristics/Svabhava of a human being include", opts:["Perseverance", "Bravery", "Generosity", "All of these"], a:3, explanations:["Perseverance (Dheerta) is a natural characteristic of a human being living with human consciousness. It signifies an unwavering commitment to understand and live in harmony at all levels, without being perturbed by external factors.", "Bravery (Veerta) is another natural characteristic, representing the commitment to help others develop right understanding and to live accordingly. It embodies the courage to stand by values and facilitate others' holistic development.", "Generosity (Udaarta) is a natural characteristic of human consciousness, which involves a readiness to invest oneself, one's body, and physical facilities to help others achieve right understanding and live in harmony. It reflects a spirit of selfless giving.", "This option is correct. The natural characteristics (Svabhava) of a human being, when living with human consciousness, are explicitly identified as Perseverance (Dheerta), Bravery (Veerta), and Generosity (Udaarta). These qualities form the basis of ethical human conduct."]},
+  {freq:2, q:"The only effective way to ensure professional ethics is by developing", opts:["Knowledge", "Ethical conduct", "Ethical competence", "Professional activities"], a:2, explanations:["While knowledge is a prerequisite, it primarily provides information and understanding. Professional ethics, however, requires the actualization of values and comprehensive understanding, which goes beyond mere intellectual knowledge to include conviction and living it.", "Ethical conduct is the desirable outcome or manifestation of living ethically. It is the behavior itself. However, to *ensure* this conduct consistently, the underlying competence and understanding must first be developed.", "This option is correct. According to UHV, the only effective way to ensure professional ethics is by developing ethical competence in the individual. This competence arises from right understanding, leading to mutually fulfilling behavior and an enriching interaction with nature.", "Professional activities are the domain where ethics are applied. Simply engaging in professional activities does not guarantee ethical outcomes; rather, it is the ethical competence of the individual performing these activities that ensures ethical practice."]},
+  {freq:2, q:"Unethical practices in various professions can be resolved", opts:["Through skills", "Through knowledge", "Through practical", "Via right understanding"], a:3, explanations:["Skills are essential for performing professional tasks effectively, but they do not inherently address the root causes of unethical behavior. Unethical practices stem from a lack of right understanding and values, not merely a deficiency in technical skills.", "Knowledge provides factual information and understanding. While foundational, it doesn't guarantee ethical action. Unethical practices often arise from a worldview focused on profit maximization or sensual pleasure, which requires a transformation of understanding rather than just more information.", "Practical training focuses on applying knowledge and skills. However, without the guidance of right understanding, practical application can still lead to unethical outcomes. It is the clarity of purpose and values that directs practice ethically.", "This option is correct. According to UHV, unethical practices in professions are primarily due to a lack of right understanding about human purpose and holistic harmony. Therefore, developing right understanding is the fundamental and most effective way to resolve these issues, as it transforms one's worldview and priorities."]},
+  {freq:2, q:"What provides clear guidance/policy framework for an unfragmented human society and universal human order?", opts:["Humanistic education", "Humanistic constitution", "Profession", "Ethical Human conduct"], a:1, explanations:["Humanistic education plays a vital role in fostering right understanding and values in individuals, preparing them to live in a harmonious society. However, it is the constitution that formalizes the principles and policies for societal structure.", "This option is correct. A humanistic constitution provides the essential clear guidance and policy framework necessary for the development of an un-fragmented human society and a universal human order. It ensures that principles of human welfare are universally applicable and facilitate holistic living for all.", "Profession is a means for human beings to participate in the larger order and contribute to society. While ethical professions support a harmonious society, a profession itself does not provide the comprehensive policy framework for societal organization.", "Ethical human conduct is the manifestation of right understanding and values in an individual's behavior. It is an outcome and a component of a harmonious society, but not the overarching constitutional or policy framework for the entire social order."]},
+  {freq:2, q:"Primary step toward holistic alternative is to develop right understanding and commitment to", opts:["Do practical", "Remain calm", "Live accordingly", "Teach others"], a:2, explanations:["While practical application is a necessary part of actualizing right understanding, the immediate commitment following its development is to integrate it into one's way of life. 'Living accordingly' encompasses the practical actions, but is a broader commitment.", "Remaining calm can be a desirable state achieved through right understanding, but it is not the primary commitment itself. The commitment involves an active engagement to align one's existence with the newly gained understanding.", "This option is correct. The primary step towards adopting a holistic alternative is to develop right understanding and a subsequent commitment to live accordingly. This involves integrating the understanding of harmony into one's thoughts, behavior, work, and participation at all levels of existence.", "Teaching others is an important social responsibility that may follow right understanding and living accordingly. However, the first and primary commitment for an individual is to actualize the understanding within themselves by living in harmony."]},
+  {freq:2, q:"Humanistic education will facilitate self-exploration leading to continuous", opts:["Education", "Self evolution", "Development", "People friendly"], a:1, explanations:["Education is the medium through which humanistic principles are imparted, but it is not the ultimate outcome of self-exploration. Humanistic education *enables* self-exploration, which in turn leads to a deeper, more profound change.", "This option is correct. Humanistic education facilitates the process of self-exploration, which is a continuous journey of self-discovery and understanding. This process ultimately leads to continuous self-evolution, meaning a progressive qualitative transformation in the human being towards holistic living and human consciousness.", "Development is a general term for growth or progress. While self-evolution is a form of development, 'self-evolution' specifically denotes a qualitative transformation and refinement of the Self, driven by internal understanding and natural acceptance.", "Being people-friendly is a desirable quality and an outcome of living with right understanding and values. It is a characteristic of ethical human conduct that manifests from the process of self-evolution, rather than the continuous process itself."]},
+  {freq:2, q:"The values of human being can be enumerated as", opts:["Nine", "Thirty", "Eighteen", "Twenty four"], a:3, explanations:["The UHV curriculum explicitly enumerates nine universal feelings or values that are foundational in human relationships (Trust, Respect, Affection, Care, Guidance, Reverence, Glory, Gratitude, Love). While significant, these are specific to relationship dynamics and not the entire scope of human values.", "The number thirty is not identified in the provided UHV context as the enumeration of human values. The framework typically categorizes values in various ways, but not as thirty comprehensive values.", "The number eighteen is not identified in the provided UHV context as the enumeration of human values. UHV focuses on a core set of principles and feelings that govern human conduct and relationships.", "While the provided context explicitly details nine 'feelings (values) in relationship', Universal Human Values envisions a comprehensive set of values encompassing all aspects of human living, including conduct, thought, and interaction at individual, family, societal, and natural levels. This broader understanding of values for holistic human living could lead to a more extensive enumeration, such as twenty-four, representing a complete set for achieving harmony at all levels of existence, though the specific enumeration of these twenty-four values is not detailed in the immediate context provided."]},
+  {freq:2, q:"Which is NOT a characteristic of professionalism?", opts:["Kindness", "Competency", "Morality", "Complacency"], a:3, explanations:["Kindness is identified as a natural characteristic of human beings with human consciousness and is associated with compassionate behavior, which is a key aspect of ethical human conduct and professionalism in UHV.", "Competence in professional ethics is explicitly defined in UHV as the ability to effectively utilize power and augment the universal human order, making it a fundamental characteristic of professionalism.", "Morality is inherently covered by the concept of 'Ethical Human Conduct' which is characterized by Values, Policy, and Character. Living with universal human values forms the basis for moral and ethical behavior in a professional context.", "Complacency, defined as being self-satisfied without being aware of potential dangers or deficiencies, is not a characteristic of professionalism. Professionalism, in UHV, demands continuous self-evaluation, responsible engagement, and a commitment to improvement, which contradicts complacency."]},
+  {freq:2, q:"Six characteristics of professional style — which one is NOT?", opts:["Ethical", "Emotional", "Responsible", "Intellectual"], a:1, explanations:["Ethical conduct is a cornerstone of professionalism in UHV, explicitly mentioned as a requirement for a good professional and defined by values, policies, and character.", "While human beings have emotions and feelings are central to UHV, 'emotional' as a characteristic of *professional style* is not emphasized. Professionalism, instead, advocates for conduct guided by right understanding and stable feelings of relationship, rather than being swayed by transient emotions.", "Professional competence in UHV includes understanding one's societal responsibility and ensuring mutually fulfilling behavior and enriching interaction with nature, which directly aligns with being responsible.", "Professionalism, guided by right understanding, requires intellectual engagement to achieve clarity about the comprehensive human goal, develop holistic vision, and build competence."]},
+  {freq:2, q:"Continuity of prosperity can be ensured only if our production system is in harmony with the", opts:["Individual", "Society", "World", "Nature"], a:3, explanations:["While individual right understanding and happiness are crucial components of the comprehensive human goal, the continuity of prosperity, which involves the sustainable availability of physical facilities, is primarily ensured by the production system's harmony with nature.", "Harmony in society is vital for fearlessness and mutual fulfillment in human-human relationships. However, the question specifically asks about the production system's harmony for ensuring the continuity of physical resources for prosperity, which points directly to nature.", "The 'world' is a broader concept encompassing all levels of existence. However, the direct interaction for *production* of physical facilities and the prevention of resource depletion and pollution are primarily with nature, making it the most accurate answer.", "For the continuity of prosperity, production systems must be eco-friendly, cyclic, and mutually enriching, meaning they must operate in harmony with nature to prevent resource depletion and pollution, as stated in the context about holistic technologies."]},
+  {freq:2, q:"Significance of relationship building in value education:", opts:["Relationships are a distraction", "Solely based on material benefits", "Healthy relationships promote emotional well-being and empathy", "None"], a:2, explanations:["In UHV, relationships are considered a fundamental requirement for human fulfillment, second only to right understanding. To view them as a distraction contradicts the core principles of the course.", "UHV explicitly differentiates between physical facilities (material benefits) and relationships. While physical facilities are necessary, relationships are primarily about feelings like trust, respect, and mutual happiness, which are not solely based on material gains.", "Value education aims for mutual fulfillment in relationships, which naturally fosters feelings of trust, respect, and affection among people. This leads to emotional well-being and cultivates empathy, helping to resolve conflicts and build a harmonious society.", "Option 2 accurately describes a key significance of relationship building in value education, highlighting its role in promoting emotional well-being and empathy."]},
+  {freq:2, q:"Besides physical facilities, human beings want", opts:["Name", "Fame", "Relationship", "None"], a:2, explanations:["While social recognition might be a desire, 'name' is not considered a fundamental and continuous human aspiration in UHV. The core aspirations are continuous happiness and prosperity, achieved through right understanding, relationship, and physical facility.", "Similar to 'name,' 'fame' is an external and temporary desire for social recognition. UHV emphasizes internal happiness and fulfillment derived from harmonious relationships and right understanding, rather than external accolades.", "UHV clearly states that for human beings, physical facility is necessary but not adequate. Fulfillment in 'Relationship' with other human beings is identified as a distinct and continuous basic requirement, alongside right understanding, for mutual happiness.", "Since 'Relationship' is identified as a fundamental need for human beings in addition to physical facilities, this option is incorrect."]},
+  {freq:2, q:"Which response is common to both Self and Body?", opts:["Knowing", "Accepting", "Recognizing", "Assuming"], a:2, explanations:["Knowing is an activity unique to the Self (consciousness), where reality is understood as it is. The Body, being a material entity, does not possess the capacity for 'knowing' in this sense.", "While 'natural acceptance' is a key concept related to the Self's innate response to proposals, 'accepting' as a direct 'response' activity common to both Self and Body is not explicitly listed in the UHV framework in the same way 'recognizing' is.", "The UHV framework explicitly states that both the Self and the Body engage in 'recognizing' and 'fulfilling'. The Body recognizes physio-chemical interactions, and the Self recognizes relationships based on its assumptions.", "Assuming is an activity of the Self, where it accepts something about reality, which may or may not be complete. The Body, as a material entity, does not 'assume'; its recognition and fulfillment are definite based on physical laws."]},
+  {freq:2, q:"What term describes desire+thought+expectation collectively?", opts:["Imagination", "Intuition", "Reality", "Instinct"], a:0},
+  {freq:2, q:"Relationship between Body and Self:", opts:["Body dominates self", "Self dominates body", "Body is an instrument of the self", "Separate entities"], a:2, explanations:["In UHV, the Self is the conscious entity that is the seer, doer, and enjoyer, and the Body is its instrument. The idea of the Body dominating the Self is contrary to the harmonious relationship envisioned in UHV.", "While the Self provides instructions and decisions for the Body to execute, the UHV description focuses on a harmonious relationship where the Body serves as an 'instrument' rather than being 'dominated' in a forceful sense.", "UHV explicitly defines the Body as an 'instrument of the Self'. The Self is the seer, doer, and enjoyer, using the Body to interact with the world and express its decisions and feelings.", "Although the Self and Body are distinct entities with different needs and activities, they are understood as a 'co-existence' within a human being. They are not merely separate but are intricately linked, with the Body serving the Self."]},
+  {freq:2, q:"What ensures harmony between Self and Body?", opts:["Competition", "Self-regulation and health", "Ignoring bodily needs", "Constant desire fulfillment"], a:1, explanations:["Competition implies opposition or struggle, which is antithetical to the concept of harmony between the Self and the Body. Harmony is achieved through a cooperative and responsible relationship.", "UHV defines 'Self-regulation' (Sanyam) as the feeling of responsibility in the Self towards the Body for its nurturing, protection, and right utilization. 'Health' (Swasthya) is the natural outcome when the Body responds to the Self's instructions and all its parts are in harmony, thereby ensuring harmony between them.", "Ignoring bodily needs leads to physical suffering and disharmony, which in turn affects the Self's state of happiness. Harmony requires conscious attention to and fulfillment of the Body's needs as guided by the Self.", "Constant desire fulfillment, especially if desires are driven by external sensations or preconditioning rather than right understanding, can lead to over-consumption, exploitation of the body, and internal contradictions, thereby disrupting harmony rather than ensuring it."]},
+  {freq:2, q:"What amongst the options is NOT said by consciousness?", opts:["Seer", "Doer", "Experiencer", "Protector"], a:3},
+  {freq:2, q:"Harmony in self is achieved when imagination is aligned with", opts:["Material possession", "Natural Acceptance", "Social Norms", "Random Ideas"], a:1},
+  {freq:2, q:"Which value serves as the foundational pillar of a strong relationship in the Family?", opts:["Trust", "Ambition", "Competition", "Material wealth"], a:0},
+  {freq:2, q:"Which one is known as Pranic order?", opts:["Material order", "Plant/Bio order", "Human order", "Animal order"], a:1},
+  {freq:2, q:"Which one is limited in size?", opts:["Space", "Values", "Unit", "All of these"], a:2},
+  {freq:2, q:"Basis for movement of all animals, birds, fishes is provided by", opts:["Animal order", "Material order", "Plant/Bio order", "Human order"], a:2},
+  {freq:2, q:"Right utilization of professional skills towards comprehensive human goals and participation in larger order refers to", opts:["Profession", "Unprofessional", "Unethical conduct", "Ethical conduct of profession"], a:3},
+  {freq:2, q:"Basis of mutual fulfillment among the 4 orders of nature:", opts:["Dominance and control", "Competition for resources", "Right utilization and understanding", "Indifference"], a:2},
+  {freq:2, q:"Broad holistic criteria for evaluation of technology:", opts:["Catering to appropriate needs/lifestyles", "People friendly", "Eco friendly", "All of these"], a:3},
+  {freq:2, q:"What does profession imply in relation to the larger order?", opts:["Isolation from society/nature", "Participation in comprehensive Human goal", "Maximization of personal benefits", "Pursuit of economic profits"], a:1},
+  {freq:2, q:"Main emphasis of holistic development:", opts:["Economic prosperity", "Spiritual enlightenment", "Scientific enlightenment", "Shift from inhuman to humane society"], a:3},
+  {freq:2, q:"How can the urgency of transformation be addressed?", opts:["Ignoring need for change", "Punitive measures", "Implementing mass-scale value education", "Focusing solely on technology"], a:2},
+  {freq:2, q:"Role of value competence in ethical professional conduct:", opts:["Promoting competition", "Aligning with societal norms", "Guiding actions with comprehensive human goals", "Personal achievements"], a:2},
+  {freq:2, q:"\"Humanistic Constitution\" in professional ethic refers to", opts:["Rigid rules", "Neglecting well-being", "Ignoring societal impact", "Recognizing Human values & dignity in professional settings"], a:3},
+  {freq:2, q:"What is the basis for ethical Human conduct?", opts:["Definiteness of values and character", "Fear of punishment", "Economic motives", "Social pressure"], a:0},
+  {freq:2, q:"What should professionals be sensitive towards in interactions?", opts:["Individual success", "Mutual enrichment", "Technological advancements", "Financial gain"], a:1},
+  {freq:2, q:"Main driver behind unethical practices in professions:", opts:["Lack of tech advancement", "Neglecting comprehensive human goal", "Societal pressure", "Personal satisfaction"], a:1},
+  {freq:2, q:"Foundation value is called", opts:["Respect", "Affection", "Love", "Trust"], a:3},
+  {freq:2, q:"Feeling for those who have made effort for excellence is", opts:["Excellence", "Reverence", "Glory", "None of these"], a:1},
+  {freq:2, q:"Human values are essential for", opts:["Living in harmony with self, each other and nature", "Making life easy", "Living with friends and family", "Making money to fulfill desires"], a:0},
+  {freq:2, q:"Each human being is co-existence of ___ and ___", opts:["Self, body", "Cost, value", "Mind, body", "Only body"], a:0},
+  {freq:2, q:"Selecting and desiring are activities of", opts:["Body", "Self", "Material", "Mind"], a:1},
+  {freq:2, q:"Value education ensures ___ and ___ in every human being", opts:["Right understanding and right feeling", "Right value and moral", "Right and wrong", "Right path and needs"], a:0},
+  {freq:2, q:"Any entity with only the activity of recognizing & fulfillment (no selecting/deciding) is called", opts:["Material Entity", "Physical", "Physical identity", "Self"], a:1},
+  {freq:2, q:"An individual aspiring for the universal human order will be", opts:["More responsible socially & ecologically", "More rich", "More powerful", "More well-traveled"], a:0},
+  {freq:2, q:"Values important for relationship may include", opts:["Aggression", "Competition", "Integrity and character", "Arrogance"], a:2},
+  {freq:2, q:"Happiness means", opts:["To be happy always", "To be in the state of harmony", "To be joyful", "To live happily always"], a:1},
+  {freq:2, q:"Value education leads a human being to", opts:["Harmony", "Peace", "Prosperity", "(a) & (b)"], a:3},
+  {freq:2, q:"Expression of thought is in the form of", opts:["Behavior", "Work", "Realization", "Behavior & Work"], a:3},
+  {freq:2, q:"Our participation at different levels in the larger order is known as", opts:["Behavior", "Values", "Efforts", "None of these"], a:2},
+  {freq:2, q:"Values are the outcome of realization and understanding, which are always", opts:["Indefinite", "Definite", "Constant", "Equilibrium"], a:1},
+  {freq:2, q:"___ means applicable to all human beings irrespective of caste, creed, nationality, religion, for all times/regions.", opts:["Rational", "Universal", "Leading to harmony", "Consciousness"], a:1},
+  {freq:2, q:"First dimension of human being is", opts:["Behavior", "Work", "Thought", "Realization"], a:2},
+  {freq:2, q:"Third dimension of human being is", opts:["Behavior", "Work", "Thought", "Realization"], a:1},
+  {freq:2, q:"Education has two domains: Value domain & Skill domain. Which is true?", opts:["Value domain = understanding part, skill domain = learning part", "Value domain = learning part, skill = understanding", "They conflict", "Value domain is part of skill domain"], a:0},
+  {freq:2, q:"Prosperity can be achieved by", opts:["Relationship", "Physical facility only", "Right understanding with physical facility", "None"], a:2},
+  {freq:2, q:"For prosperity, which is NOT required?", opts:["Appropriate assessment of physical needs", "Producing more than required physical facility", "Knowing needs as limited", "Giving first priority to physical facilities"], a:3},
+  {freq:2, q:"The feeling of having more than required physical facility is", opts:["Happiness", "Prosperity", "Satisfaction", "Success"], a:1},
+  {freq:2, q:"Basic requirements for fulfillment of aspirations, in correct priority order:", opts:["Right understanding, Relationship, Physical Facilities", "Physical Facilities, Relationship, Right understanding", "Right understanding, Physical facilities, Relationship", "Relationship, Right understanding, Physical Facilities"], a:0},
+  {freq:2, q:"Our natural acceptance is to be in which category of people?", opts:["Suvidha Viheen Dukhi Daridra (SVDD)", "Suvidha Sampanna Dukhi Daridra (SSDD)", "Suvidha Sampanna Sukhi Samridh (SSSS)", "All of these"], a:2},
+  {freq:2, q:"To which category does a prosperous person belong?", opts:["SVDD", "SSDD", "SSSS", "None"], a:2},
+  {freq:2, q:"Right understanding with physical facilities brings", opts:["Deprivation", "Mutual prosperity", "Mutual fulfillment", "None"], a:1},
+  {freq:2, q:"Third basic requirement for transformation from animal to human consciousness is", opts:["Mental discipline", "Sensory pleasure", "All of these", "None"], a:0},
+  {freq:2, q:"Right understanding of relationship means", opts:["I am in harmony with everyone and everything", "I am in conflict with everyone", "Indifference", "None"], a:0},
+  {freq:2, q:"Fourth basic requirement for transformation from animal to human consciousness is", opts:["Relationship", "Detachment", "Right understanding", "Sensory pleasure"], a:0},
+  {freq:2, q:"When in harmony with everything and everyone, we can be in", opts:["Conflict", "Imbalance", "Detachment", "Peace"], a:3},
+  {freq:2, q:"Human goal at the level of nature is", opts:["Prosperity", "Co-existence", "Fearlessness", "Right understanding"], a:1},
+  {freq:2, q:"\"Knowing\" means having", opts:["Self exploration", "Right understanding", "Evaluation", "None of these"], a:1},
+  {freq:2, q:"What is true about a professional?", opts:["Has to have autonomy", "Cannot be supervised by client", "Should not be subject to political control", "All of these"], a:3},
+  {freq:2, q:"Basic rule of professionalism: \"not knowingly to do ___\"", opts:["Harm", "Work", "Competition", "Copying"], a:0},
+  {freq:2, q:"Study of ___, contrasted with legal obligations, is called ethics", opts:["Behaviors", "Moral", "Business", "All of these"], a:1},
+  {freq:2, q:"Ethics is a conception of ___ conduct", opts:["Bad/Wrong", "Good/Correct", "Right/True", "Right and Wrong"], a:3},
+  {freq:2, q:"Ethics and ___ go together", opts:["Profits", "Management", "Workership", "All of these"], a:3},
+  {freq:2, q:"___ driven companies are always successful in the long run", opts:["Management", "Worker union", "Value", "Profit"], a:2},
+  {freq:2, q:"A business needs to be ethical in order to", opts:["Fulfill public expectations", "Prevent harming others", "Improve relations/productivity", "All of these"], a:3},
+  {freq:2, q:"Types of ethics issues include", opts:["Functional area ethics", "Corporate policy ethics", "Face to face ethics", "All of these"], a:3},
+  {freq:2, q:"What is called living with assumption of self only as body, and on basis of physical facilities, not right understanding/relationship?", opts:["Human consciousness", "Happiness", "Right Understanding", "Animal Consciousness"], a:3},
+  {freq:2, q:"Participation of human beings is seen in two forms:", opts:["Prosperity and work", "Values and Understanding", "Behavior and Wealth", "Behavior and Work"], a:3},
+  {freq:2, q:"What are the outcomes of realization and understanding?", opts:["Work", "Values", "Happiness", "Health"], a:1},
+  {freq:2, q:"Observable symbols/signs of an organization's culture are called", opts:["Cultural design", "Artifacts", "Cultural formatting", "Cultural decor"], a:1},
+  {freq:2, q:"Ability to perform a specific task/action/function successfully is called", opts:["Competence", "Purpose", "Intention", "Program"], a:0},
+  {freq:2, q:"To live in harmony with other human beings is", opts:["Svatva", "Swatantrata", "Swarajya", "None"], a:1},
+  {freq:2, q:"Natural acceptance is", opts:["Universal", "Definite", "Continuous", "All of these"], a:3},
+  {freq:2, q:"It is important to have a good ___ to be successful in your career", opts:["Appearance", "Attendance", "Attitude", "Respectfulness"], a:2},
+  {freq:2, q:"___ skills (writing, speaking, body language) are important so messages to others are clear", opts:["Communication", "Cooperation", "Honesty", "Integrity"], a:0},
+  {freq:2, q:"High level of ___ means standing by your values even under pressure", opts:["Communication", "Cooperation", "Honesty", "Integrity"], a:3},
+  {freq:2, q:"Without ___ you can get in trouble for lying/cheating/deceiving others", opts:["Communication", "Cooperation", "Honesty", "Integrity"], a:2},
+  {freq:2, q:"Having ___ makes you a trusted person because you're committed to your company", opts:["Loyalty", "Organizational skills", "Productivity", "Respect"], a:0},
+  {freq:2, q:"Quality needed when jobs can be done much better/faster with others:", opts:["Responsibility", "Respect", "Teamwork", "Cooperation"], a:2},
+  {freq:2, q:"Three major types of ethical issues include EXCEPT:", opts:["Communication issues", "Systematic issues", "Corporate issues", "Individual issues"], a:0},
+  {freq:2, q:"Ethics are moral principles and values which", opts:["Guide a firm's behavior", "Govern the actions of an individual", "Provide employees with rules", "Are legally enforceable"], a:1},
+  {freq:2, q:"A ___ is a set of principles people/organizations hold themselves to", opts:["Code of ethics", "Code of honor", "Ethical perspective", "Persuasive tactic"], a:0},
+  {freq:2, q:"___ are beliefs/attitudes that can conflict with our ethical decisions", opts:["Morals", "Principles", "Virtues", "Values"], a:3},
+  {freq:2, q:"IPR is an important aspect of international trade. Which is covered?", opts:["Patents", "Copyrights", "Trademarks", "All of these"], a:3},
+  {freq:2, q:"Which is NOT infringement of copyright?", opts:["Copy software to another computer by educational institution", "Copy by company", "Copy to another computer", "To make backup copies"], a:3},
+  {freq:2, q:"Patent can be granted for", opts:["Process", "Ideas", "Both product and process", "Product"], a:2},
+  {freq:2, q:"Government may order non-advertisement of patent application for invention related to", opts:["Information technology", "Food", "Drug", "Defense technology"], a:3},
+  {freq:2, q:"A design can also be registered under", opts:["Trademark Act", "Patent Act", "Geographical Indication Act", "Copyright Act"], a:0},
+  {freq:2, q:"IPR complete specification gives", opts:["Description of claim only", "Description of royalty", "Full description of invention", "Description of application"], a:2},
+  {freq:2, q:"Copyright is a", opts:["Creation by effort, intellect and capital", "Creation by efforts only", "Creation by negligence", "Creation by mental status"], a:0},
+  {freq:2, q:"Globalization has improved living structure of which group?", opts:["All the people", "Developing countries", "Developed countries", "None"], a:2},
+  {freq:2, q:"Which sector experienced the least profit due to globalization?", opts:["Industrial", "Service", "Agriculture", "Secondary"], a:2},
+  {freq:1, q:"What types of families do we see in cities mostly? (repeat-check)", opts:["Nuclear Family", "Joint family", "Matrilineal family", "All of the above"], a:0},
+  {freq:1, q:"Self-exploration uses two mechanisms — Natural Acceptance and ii) ---?", opts:["Experiential validation", "Reason", "Logical Thinking", "Theoretical concept"], a:0},
+  {freq:1, q:"Are the contents of self-exploration:", opts:["Program", "Desire", "Both a and b", "None"], a:1},
+  {freq:1, q:"Harmony should be maintained in", opts:["Between body and life", "Between self and society", "Between life and environment", "All of these"], a:3},
+  {freq:1, q:"There is an exchange of ___ between self and body.", opts:["Food", "Thought", "Air", "Information"], a:1},
+  {freq:1, q:"What is the activity of the power \"Expectation\"?", opts:["Imaging", "Analysing", "Selecting/Testing", "Distributing"], a:2},
+  {freq:1, q:"Living on the basis of preconditioning or sensation refers to", opts:["Enslaved", "Self organized", "Independent", "Svantrata"], a:0},
+  {freq:1, q:"What is the basis of self-organized vs preconditioned living — opposite of enslaved is", opts:["Self organized / Independent / Svantrata (all valid framings)", "-", "-", "-"], a:0},
+  {freq:1, q:"Which characteristic does NOT relate to self?", opts:["Qualitative", "Continuous", "Temporary", "Quantitative"], a:2},
+  {freq:1, q:"What ensures continuity of need for self?", opts:["Respect, Trust = continuous needs", "-", "-", "-"], a:0},
+  {freq:1, q:"The need of self is", opts:["Wealth", "Food", "Respect", "Shelter"], a:2},
+  {freq:1, q:"Body's needs are fulfilled by", opts:["Emotional support", "Physical facility", "Moral values", "Spiritual practices"], a:1},
+  {freq:1, q:"Which is a quantitative need?", opts:["Respect", "Trust", "Food", "Friendship"], a:2},
+  {freq:1, q:"Response of the body is based on", opts:["Knowing and assuming", "Recognizing and fulfilling", "Feeling and thinking", "Deciding and acting"], a:1},
+  {freq:1, q:"Which need is continuous for the self?", opts:["Food", "Shelter", "Respect", "Clothes"], a:2},
+  {freq:1, q:"Process of fulfillment for the self includes", opts:["Physical work", "Accumulation of resources", "Right understanding", "None of these"], a:2},
+  {freq:1, q:"Which is naturally acceptable in a relationship?", opts:["Disrespect", "Mistrust", "Jealousy", "Respect"], a:3},
+  {freq:1, q:"Which feeling is recognized as the complete value in relationship?", opts:["Care", "Glory", "Gratitude", "Love"], a:3},
+  {freq:1, q:"Which feeling is considered the foundation of all relationship?", opts:["Care", "Trust", "Respect", "Affection"], a:1},
+  {freq:1, q:"Trust is to be assured that the other intends to make me", opts:["Happy and prosperous", "Wealthy", "Powerful", "Famous"], a:0},
+  {freq:1, q:"First step in understanding relationship?", opts:["Creating it", "Fulfilling it", "Recognizing it", "Neglecting it"], a:2},
+  {freq:1, q:"Which is NOT a feeling in relationship?", opts:["Jealousy", "Care", "Respect", "Affection"], a:0},
+  {freq:1, q:"Relationship exists between", opts:["Oneself and another self", "One body and another body", "Self and body", "Body and environment"], a:0},
+  {freq:1, q:"Society means", opts:["Family", "All human beings", "Few individuals", "None of these"], a:1},
+  {freq:1, q:"Nature is a collection of which of the following?", opts:["Units", "Species", "Atoms", "Molecules"], a:0},
+  {freq:1, q:"Physical order includes units like", opts:["Plants", "Animals", "Soil", "Humans"], a:2},
+  {freq:1, q:"Which order in nature includes grass, plants, trees?", opts:["Physical", "Bio", "Animal", "Human"], a:1},
+  {freq:1, q:"Animals/birds help spread seeds of plants from", opts:["One place to another", "One tree to another", "One forest to another", "One species to another"], a:0},
+  {freq:1, q:"Soil-to-plants-to-soil conversion is an example of", opts:["Linear process", "Cyclic process", "Random process", "Unidirectional process"], a:1},
+  {freq:1, q:"Which is a unit of animal order?", opts:["Soil", "Trees", "Birds", "Water"], a:2},
+  {freq:1, q:"What enriches soil by acting as very good manure?", opts:["Dead leaves", "Water", "Air", "Animal dung"], a:3},
+  {freq:1, q:"Activity of respiration is specific to which order?", opts:["Physical", "Bio", "Animal", "Human"], a:1},
+  {freq:1, q:"Units of bio order participate in", opts:["Water cycle", "Oxygen cycle", "Nitrogen cycle", "All of these"], a:3},
+  {freq:1, q:"Which is a Universal human value?", opts:["Trust", "Wealth", "Power", "Fame"], a:0},
+  {freq:1, q:"Basic characteristic of ethical human conduct:", opts:["Variability", "Certainty", "Inconsistency", "Ambiguity"], a:1},
+  {freq:1, q:"What ensures harmony at all levels of human participation?", opts:["Universal Human Values", "Wealth", "Power", "Fame"], a:0},
+  {freq:1, q:"Which is NOT a human value?", opts:["Trust", "Respect", "Greed", "Love"], a:2},
+  {freq:1, q:"What leads to harmonious coexistence?", opts:["Right understanding", "Power", "Wealth", "Fame"], a:0},
+  {freq:1, q:"Typical case study for holistic production systems:", opts:["Modern Technologies", "Ancient Technologies", "Sustainable farming", "Industrial farming"], a:2},
+  {freq:1, q:"Which value is essential in human-to-human relationship?", opts:["Trust", "Wealth", "Power", "Fame"], a:0},
+  {freq:1, q:"Process of ensuring value-based living is achieved through", opts:["Fear", "Greed", "Right understanding", "Enforcement"], a:2},
+  {freq:1, q:"Result of right utilization of resources?", opts:["Prosperity", "Poverty", "Waste", "None of these"], a:0},
+  {freq:1, q:"Foundation of humanistic education is based on", opts:["Wealth", "Right understanding", "Power", "Fame"], a:1},
+  {freq:1, q:"Role of R&D in context of holistic technologies/systems?", opts:["Promote profit maximization", "Focus on individual success", "Encourage competition", "Develop systems aligned with right understanding"], a:3},
+  {freq:1, q:"What is the process used in value education to verify proposals?", opts:["Self-exploration", "External validation", "Peer review", "Mediation"], a:0},
+  {freq:1, q:"Continuous happiness and prosperity can be achieved by", opts:["Wealth accumulation", "Physical health only", "Right understanding, relationship and physical facility", "Technological advancement"], a:2},
+  {freq:1, q:"Content of value education primarily focuses on", opts:["Economic growth", "Physical well-being", "Materialistic achievements", "Right understanding and relationships"], a:3},
+  {freq:1, q:"Self-exploration leads to", opts:["Understanding human needs", "Acquiring wealth", "Pursuing individual desires", "Technological skills"], a:0},
+  {freq:1, q:"What is true about happiness in value education?", opts:["Temporary satisfaction", "Continuous state of harmony", "Accumulation of wealth", "Absence of problems"], a:1},
+  {freq:1, q:"Method to fulfill basic human aspirations:", opts:["Ignoring societal norms", "Self-exploration and understanding", "Only material gains", "None of these"], a:1},
+  {freq:1, q:"The human being is the co-existence of", opts:["Mind and body", "Self and body", "Heart and mind", "Soul and body"], a:1},
+  {freq:1, q:"Continuous happiness is achieved through", opts:["Accumulating wealth", "Achieving power", "Living in harmony", "Pursuing pleasure"], a:2},
+  {freq:1, q:"Right understanding in the self leads to", opts:["Wealth", "Happiness", "Confusion", "Ignorance"], a:1},
+  {freq:1, q:"Activities of the self are", opts:["Temporary", "Continuous", "Periods", "Sporadic"], a:1},
+  {freq:1, q:"Which is true about happiness/recognition?", opts:["Happiness is definite and can be understood", "Need to be unhappy to recognize happy", "Will be bored if always happy", "Will grow only if unhappy"], a:0},
+  {freq:1, q:"To be wealthy is ___ condition in the modern world to be happy", opts:["Not essential", "True", "Fake", "The most important"], a:0},
+  {freq:1, q:"Right understanding gained through self-exploration ALSO enables identifying definitiveness of human conduct — called", opts:["Ethical Human conduct", "Values", "Policy", "Utility values"], a:0},
+  {freq:1, q:"Self-exploration uses two mechanisms; Natural Acceptance and Experiential validation (alt phrasing check)", opts:["Experiential validation", "Reason", "Logical Thinking", "Theoretical concept"], a:0},
+  {freq:1, q:"Which of the following actions will likely lead to organizational ethical behavior?", opts:["Establishing an ethics office", "Promoting moral courage", "Developing strong governance processes", "All of these"], a:3},
+  {freq:1, q:"___ behavior arises when managers put personal/organizational goals above stakeholder rights", opts:["Complementary", "Situational", "Unethical", "Confusing"], a:2},
+  {freq:1, q:"Accepted principles of right or wrong governing conduct of business people are called", opts:["Business", "Conduct", "Business ethics", "Principles"], a:2},
+];
+
+const FREQ_LABEL = f => f>=4 ? `High Priority (${f}/6 Papers)` : f===3 ? `Medium Priority (${f}/6 Papers)` : f===2 ? `Repeated (${f} Papers)` : `Asked Once`;
+
+// Sort questions by priority (frequency)
+QUESTIONS.sort((a,b)=>b.freq-a.freq);
+
+const quizEl = document.getElementById('quiz');
+const scoreEl = document.getElementById('score');
+const answeredEl = document.getElementById('answered');
+const filterEl = document.getElementById('filter');
+const resetBtn = document.getElementById('resetBtn');
+const progressBarEl = document.getElementById('progressBar');
+const progressTextEl = document.getElementById('progressText');
+
+let state = QUESTIONS.map(()=>({answered:false, correct:null, picked:null}));
+
+function render(){
+  quizEl.innerHTML='';
+  const mode = filterEl.value;
+  let renderedCount = 0;
+  
+  QUESTIONS.forEach((item,i)=>{
+    if(mode==='hi' && item.freq<3) return;
+    if(mode==='wrong' && !(state[i].answered && state[i].correct===false)) return;
+
+    renderedCount++;
+    const div = document.createElement('div');
+    div.className = 'q' + (item.freq>=3 ? ' high':'');
+    
+    // Head with question number and priority
+    const head = document.createElement('div');
+    head.className='qhead';
+    head.innerHTML = `<span class="qnum">Question ${i+1}</span><span class="freq ${item.freq>=3?'hi':''}">${FREQ_LABEL(item.freq)}</span>`;
+    div.appendChild(head);
+    
+    // Question text
+    const qt = document.createElement('div');
+    qt.className='qtext';
+    qt.textContent = item.q;
+    div.appendChild(qt);
+    
+    // Options grid
+    const opts = document.createElement('div');
+    opts.className='opts';
+    item.opts.forEach((opt,oi)=>{
+      const b = document.createElement('button');
+      b.className='opt';
+      b.textContent = opt;
+      
+      if(state[i].answered){
+        b.disabled = true;
+        if(oi===item.a) b.classList.add('correct');
+        if(state[i].picked===oi && oi!==item.a) b.classList.add('wrong');
+      }
+      
+      b.onclick = ()=>{
+        if(state[i].answered) return;
+        state[i].answered = true;
+        state[i].picked = oi;
+        state[i].correct = (oi===item.a);
+        updateScore();
+        render(); // Rerender to show states and explanations
+      };
+      opts.appendChild(b);
+    });
+    div.appendChild(opts);
+    
+    // Explanations Box (shows only if answered)
+    if(state[i].answered){
+      const expCard = document.createElement('div');
+      expCard.className = 'explanation-card';
+      
+      const header = document.createElement('div');
+      header.className = 'explanation-header ' + (state[i].correct ? 'correct' : 'wrong');
+      header.innerHTML = state[i].correct 
+        ? `<span>✓ Correct Response</span>` 
+        : `<span>✗ Incorrect Response (Correct is: Option ${String.fromCharCode(65 + item.a)})</span>`;
+      expCard.appendChild(header);
+      
+      const body = document.createElement('div');
+      body.className = 'explanation-body';
+      
+      // Check if we have pre-computed explanations
+      if(item.explanations && item.explanations.length === item.opts.length){
+        // 1. Explanation of the picked option
+        const pickedSec = document.createElement('div');
+        pickedSec.className = 'explanation-section';
+        const isPickedCorrect = (state[i].picked === item.a);
+        pickedSec.innerHTML = `
+          <div class="explanation-title ${isPickedCorrect ? 'good' : 'bad'}">
+            Your Choice: ${item.opts[state[i].picked]} (${isPickedCorrect ? 'Correct' : 'Incorrect'})
+          </div>
+          <div class="explanation-text">${item.explanations[state[i].picked]}</div>
+        `;
+        body.appendChild(pickedSec);
+        
+        // 2. If wrong, show the correct explanation as well
+        if(!isPickedCorrect){
+          const correctSec = document.createElement('div');
+          correctSec.className = 'explanation-section';
+          correctSec.innerHTML = `
+            <div class="explanation-title good">
+              Correct Choice: ${item.opts[item.a]}
+            </div>
+            <div class="explanation-text">${item.explanations[item.a]}</div>
+          `;
+          body.appendChild(correctSec);
+        }
+      } else {
+        // Fallback explanation if JSON is not generated yet
+        body.innerHTML = `
+          <div class="explanation-section">
+            <div class="explanation-text">
+              ${state[i].correct 
+                ? 'Great job! You selected the right answer.' 
+                : `You selected "${item.opts[state[i].picked]}". The correct answer is "${item.opts[item.a]}". (Detailed notes explanations are being compiled...)`}
+            </div>
+          </div>
+        `;
+      }
+      
+      expCard.appendChild(body);
+      div.appendChild(expCard);
+    }
+    
+    quizEl.appendChild(div);
+  });
+  
+  if(renderedCount===0){
+    quizEl.innerHTML = '<p style="font-family:inherit;color:var(--text-muted);text-align:center;padding:40px;">No questions match this filter.</p>';
+  }
+}
+
+function updateScore(){
+  const answered = state.filter(s=>s.answered).length;
+  const correct = state.filter(s=>s.correct===true).length;
+  
+  scoreEl.textContent = correct;
+  answeredEl.textContent = answered;
+  
+  // Update progress bar
+  const total = QUESTIONS.length;
+  const percent = total > 0 ? Math.round((answered / total) * 100) : 0;
+  progressBarEl.style.width = `${percent}%`;
+  progressTextEl.textContent = `${percent}% Completed (${answered}/${total})`;
+}
+
+filterEl.onchange = render;
+resetBtn.onclick = ()=>{
+  if(confirm("Are you sure you want to reset all your progress?")){
+    state = QUESTIONS.map(()=>({answered:false, correct:null, picked:null}));
+    updateScore();
+    render();
+  }
+};
+
+render();
+updateScore();
+</script>
+</body>
+</html>
