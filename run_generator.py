@@ -46,7 +46,7 @@ def run_with_watchdog():
                 else:
                     # No update since start or last reset
                     idle_time = time.time() - last_activity
-                    if idle_time > 80:  # 80 seconds timeout
+                    if idle_time > 140:  # 140 seconds timeout
                         print(f"[WATCHDOG] No cache updates for {int(idle_time)}s. Process likely hung. Killing and restarting...")
                         process.terminate()
                         try:
@@ -57,8 +57,8 @@ def run_with_watchdog():
             else:
                 # If cache file doesn't exist yet, check process running time
                 run_time = time.time() - last_activity
-                if run_time > 80:
-                    print("[WATCHDOG] Process running for 80s without creating cache. Killing and restarting...")
+                if run_time > 140:
+                    print("[WATCHDOG] Process running for 140s without creating cache. Killing and restarting...")
                     process.terminate()
                     try:
                         process.wait(timeout=5)
