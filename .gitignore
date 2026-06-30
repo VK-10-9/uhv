@@ -3,10 +3,8 @@
 *.ppt
 *.pptx
 
-# Ignore local RAG script & text database
+# Ignore text database and caches
 extracted_notes.txt
-extract_text.py
-generate_explanations.py
 explanations_cache.json
 
 # Ignore system files and logs
